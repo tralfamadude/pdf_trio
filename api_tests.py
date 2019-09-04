@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import requests
+import os
 
 API_HOSTPORT = os.environ.get('API_HOSTPORT')
 if not API_HOSTPORT:

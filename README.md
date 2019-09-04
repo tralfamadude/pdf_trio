@@ -8,10 +8,15 @@ The following env vars must be defined to run this API service
 * TEMP path to temp area, /tmp by default
 * TF_IMAGE_SERVER_HOSTPORT the host:port for tensorflow-serving process
 
-## Setup
+## REST API service Setup
 conda create --name research-pub python=3.7  numpy flask
 conda activate research-pub
 pip install fasttext
-
+pip install -r requirements.txt
 sudo apt-get install poppler-utils
 sudo apt-get install imagemagick
+
+## Back-Backend Services
+* fastText
+* tensorflow-serving
+* BERT
