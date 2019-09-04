@@ -151,7 +151,7 @@ def classify_pdf_linear(pdf_token_list):
     Apply fastText model to content
 
     :param pdf_tokens: cleaned tokens list from pdf content
-    :return: confidence as type float with range [0.0,1.0] that example is positive
+    :return: encoded confidence as type float with range [0.5,1.0] that example is positive
     """
     #  classify using fastText model
     results = fasttext_model.predict(" ".join(pdf_token_list))
