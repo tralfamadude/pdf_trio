@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from flask import Flask
 from flask import request, jsonify, abort, render_template
 import datetime
@@ -8,7 +10,7 @@ from multiprocessing import Value
 import pdf_classifier
 
 """
-libs added:   config 
+
 """
 
 classify_url_counter = Value('i', 0)
