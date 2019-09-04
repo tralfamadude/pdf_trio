@@ -84,8 +84,10 @@ def classify_url(url):
     :return: confidence [0.0,1.0] that url points to positive case
     """
     tokens = gen_tokens(extract_tokens(remove_wayback_prefix(url)))
+    tokens_concat = " ".join(tokens)
+    log.info("classify_url: tokens={}" % (tokens_concat))
     #  classify using fastText model for urlmeta
-    results = fasttext_url_model.predict(" ".join(tokens))
+    results = fasttext_url_model.predict(tokens_concat)
     label = results[0][0]
     confidence = results[1][0]
     log.info("classify_url: label=%s confidence=%.2f url=%s" % (label, confidence, url))
