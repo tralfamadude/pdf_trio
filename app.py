@@ -19,10 +19,12 @@ classify_pdf_counter = Value('i', 0)
 classify_pdf_msec = Value('i', 0)
 classify_url_msec = Value('i', 0)
 
+
 app = Flask(__name__)
 
 logging.basicConfig(filename='research-pub.log', level=logging.DEBUG)
 log = logging.getLogger(__name__)
+log.info("starting")
 
 @app.route('/', methods = ['GET'])
 def toplevel():

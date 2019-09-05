@@ -5,13 +5,7 @@ import requests
 import os
 import json
 
-API_HOSTPORT = os.environ.get('API_HOSTPORT')
-if not API_HOSTPORT:
-    raise ValueError('Missing api spec, define env var API_HOSTPORT=host:port')
-API_HOST = API_HOSTPORT.split(":")[0]
-API_PORT = API_HOSTPORT.split(":")[1]
-API_BASE_URL = "http://%s:%s/" % (API_HOST, API_PORT)
-
+API_BASE_URL = "http://localhost:3939/"
 
 headers = {"content-type": "application/json"}
 url_map = {"urls": ["https://arxiv.org/pdf/1607.01759.pdf", "https://example.com/foo.pdf"]}

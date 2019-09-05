@@ -7,7 +7,6 @@ The following env vars must be defined to run this API service
 - FT_URL_MODEL path to FastText model for URL classifier
 - TEMP path to temp area, /tmp by default
 - TF_IMAGE_SERVER_HOSTPORT the host:port for tensorflow-serving process
-- API_HOSTPORT is host:port for api, used for testing (api_tests.py)
 
 ## REST API service Setup
 ```
@@ -18,6 +17,7 @@ pip install -r requirements.txt
 sudo apt-get install poppler-utils
 sudo apt-get install imagemagick
 ```
+We expect imagemagick 6.x; when 7.x is used, the binary will not be called convert anymore.
 
 ## Back-Backend Services
 - fastText
