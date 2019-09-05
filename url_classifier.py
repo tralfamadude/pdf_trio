@@ -65,7 +65,7 @@ def extract_uri(url):
 
 # returns a list of tokens from the url
 # Note: some items are empty
-def extract_tokens(url):
+def extract_url_tokens(url):
     d = extract_domain(url)
     uri = extract_uri(url)
     tokens = uri.split('/')
@@ -83,7 +83,7 @@ def classify_url(url):
     :param url: one URL to classify
     :return: confidence [0.0,1.0] that url points to positive case
     """
-    tokens = gen_tokens(extract_tokens(remove_wayback_prefix(url)))
+    tokens = gen_tokens(extract_url_tokens(remove_wayback_prefix(url)))
     tokens_concat = " ".join(tokens)
     log.debug("classify_url: url=%s tokens=%s" % (url, tokens_concat))
     #  classify using fastText model for urlmeta
