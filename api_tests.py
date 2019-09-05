@@ -10,7 +10,7 @@ if not API_HOSTPORT:
     raise ValueError('Missing api spec, define env var API_HOSTPORT=host:port')
 API_HOST = API_HOSTPORT.split(":")[0]
 API_PORT = API_HOSTPORT.split(":")[1]
-API_BASE_URL = "http://%s:%s/".format(API_HOST, API_PORT)
+API_BASE_URL = "http://%s:%s/" % (API_HOST, API_PORT)
 
 
 headers = {"content-type": "application/json"}
