@@ -85,7 +85,7 @@ def classify_url(url):
     """
     tokens = gen_tokens(extract_tokens(remove_wayback_prefix(url)))
     tokens_concat = " ".join(tokens)
-    log.info("classify_url: tokens={}" % (tokens_concat))
+    log.debug("classify_url: url=%s tokens=%s" % (url, tokens_concat))
     #  classify using fastText model for urlmeta
     results = fasttext_url_model.predict(tokens_concat)
     label = results[0][0]
