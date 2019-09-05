@@ -124,11 +124,11 @@ def encode_confidence(label, confidence):
     Encode label,confidence into a single float [0.0, 1.0] so that 1.0 means perfect confidence in positive case,
     and 0.0 is perfect confidence for negative case.
     confidence 0 means 'other', 1.0 means 'research'
-    :param label: 'research' or 'other'
+    :param label: 'research' or '__label__research' versus 'other' or '__label__other'
     :param confidence: [0.5, 1.0]
     :return: [0.0, 1.0]
     """
-    if label == '__label__research':
+    if label == '__label__research' or label == 'research':
         return ((confidence / 2) + 0.5)
     else:
         return (0.5 - (confidence / 2))
