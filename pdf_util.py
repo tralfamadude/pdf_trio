@@ -7,7 +7,7 @@ import random
 import datetime
 import atexit
 import logging
-log = logging.getLogger("pdf_util")
+log = logging.getLogger(__name__)
 
 """
 PDF processing. 

@@ -10,7 +10,7 @@ import re
 import logging
 import pdf_classifier
 
-log = logging.getLogger("url_classifier")
+log = logging.getLogger(__name__)
 
 FT_URL_MODEL = os.environ.get('FT_URL_MODEL')
 if not FT_URL_MODEL:

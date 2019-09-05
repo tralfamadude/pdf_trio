@@ -7,7 +7,7 @@ import text_prep
 import pdf_util
 import logging
 
-log = logging.getLogger("pdf_classifier")
+log = logging.getLogger(__name__)
 
 version_map = {
     "image": "20190708",

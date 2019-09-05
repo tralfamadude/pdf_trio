@@ -8,6 +8,7 @@ import html
 import config
 from multiprocessing import Value
 import pdf_classifier
+import logging
 
 """
 
@@ -20,8 +21,8 @@ classify_url_msec = Value('i', 0)
 
 app = Flask(__name__)
 
-import logging
-log = logging.getLogger("api")
+logging.basicConfig(filename='research-pub.log', level=logging.DEBUG)
+log = logging.getLogger(__name__)
 
 @app.route('/', methods = ['GET'])
 def toplevel():
