@@ -10,4 +10,4 @@ if [ ! -e ./app.py ]; then
   exit 1
 fi
 
-flask -h localhost -p 3939
+flask run -h localhost -p 3939

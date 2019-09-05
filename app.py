@@ -78,8 +78,7 @@ def classify_by_url():
     :return: json { "url1": 0.88, "url2": 0.92, "url3": 0.23 }
     """
     input = request.json or {}
-    urls_json = input.get('urls')
-    url_list = json.loads(urls_json)
+    url_list = input.get('urls')
     with classify_url_counter.get_lock():
         classify_url_counter.value += 1
     results_map = {}
