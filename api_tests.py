@@ -15,4 +15,7 @@ if json_response is None:
     print("Response is None")
 else:
     # expecting json like:   { "url1": 0.88, "url2": 0.23 }
-    predictions = json.loads(json_response.text)['predictions']
+    print("verbatim response=%s" % (json_response.text))
+    predictions = json.loads(json_response.text)
+    for k, v in predictions:
+        print("%s : %s" % (v, k))
