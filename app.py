@@ -8,6 +8,7 @@ import html
 import config
 from multiprocessing import Value
 import pdf_classifier
+import url_classifier
 import logging
 
 """
@@ -24,7 +25,7 @@ app = Flask(__name__)
 
 logging.basicConfig(filename='research-pub.log', level=logging.DEBUG)
 log = logging.getLogger(__name__)
-log.info("starting")
+log.info("STARTING   STARTING   STARTING   STARTING   STARTING   STARTING   STARTING")
 
 @app.route('/', methods = ['GET'])
 def toplevel():
