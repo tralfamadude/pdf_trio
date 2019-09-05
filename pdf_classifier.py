@@ -128,7 +128,7 @@ def encode_confidence(label, confidence):
     :param confidence: [0.5, 1.0]
     :return: [0.0, 1.0]
     """
-    if label == 'research':
+    if label == '__label__research':
         return ((confidence / 2) + 0.5)
     else:
         return (0.5 - (confidence / 2))
