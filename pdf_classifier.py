@@ -128,6 +128,12 @@ def encode_confidence(label, confidence):
     :param confidence: [0.5, 1.0]
     :return: [0.0, 1.0]
     """
+    if confidence < 0.5:
+        log.error("encode_confidence called improperly with label=%s confidence=%f" % (label, confidence))
+    if confidence > 1.0:
+        confidence = 1.0
+    if confidence < 0.0:
+        confidence = 0.0
     if label == '__label__research' or label == 'research':
         return ((confidence / 2) + 0.5)
     else:

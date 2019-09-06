@@ -17,5 +17,5 @@ else:
     # expecting json like:   { "url1": 0.88, "url2": 0.23 }
     print("verbatim response=%s" % (json_response.text))
     predictions = json.loads(json_response.text)["predictions"]
-    for k, v in predictions:
-        print("%s : %s" % (v, k))
+    for k in predictions:
+        print("%.2f : %s" % (predictions[k], k))
