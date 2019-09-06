@@ -82,14 +82,15 @@ def classify_by_url():
     start_ts = int(time.time()*1000)
     input = request.json or {}
     url_list = input.get('urls')
-    with classify_url_counter.get_lock():
-        classify_url_counter.value += 1
     results_map = {}
     for url in url_list:
         confidence = url_classifier.classify_url(url)
         results_map[url] = confidence
     log.debug("results_map=%s" % (results_map))
     retmap = {"predictions": results_map}
+    # update counters
+    with classify_url_counter.get_lock():
+        classify_url_counter.value += 1
     finish_ts = int(time.time()*1000)
     with classify_url_msec.get_lock():
         classify_url_msec.value = classify_url_msec.value + finish_ts - start_ts
@@ -103,16 +104,15 @@ def classify_pdf():
     :return: json
     """
     start_ts = int(time.time() * 1000)
-    input = request.json or {}
-
-    # does this work?   pdf_content = request.files["pdf_content"]
-
-    type_param = input.get('type')
+    # file_bytes = request.files  # ToDo: does this work?
+    type_param = request.form.get('type')
+    pdf_content = request.form.get('pdf_content')  # ToDo: is this needed?
     if not type_param:
         type_param = "auto"
-    with classify_pdf_counter.get_lock():
-        classify_pdf_counter.value += 1
-    pdf_content = input.get('pdf_content')
+    if not pdf_content or len(pdf_content) == 0:
+        log.error("no pdf content")
+        return "", 500
+    log.debug("type=%s  len(pdf_content=%d" % (type_param, len(pdf_content)))
     results = pdf_classifier.classify_pdf_multi(type_param, pdf_content)
     dummy_reply = {"is_research" : 0.94,
                    "image" : 0.96,
@@ -125,6 +125,9 @@ def classify_pdf():
                        "urlmeta" : "20190722"
                                 }
                    }
+    # update counters
+    with classify_pdf_counter.get_lock():
+        classify_pdf_counter.value += 1
     finish_ts = int(time.time()*1000)
     with classify_pdf_msec.get_lock():
         classify_pdf_msec.value = classify_pdf_msec.value + finish_ts - start_ts

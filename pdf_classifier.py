@@ -163,7 +163,7 @@ def classify_pdf_linear(pdf_token_list):
     results = fasttext_model.predict(" ".join(pdf_token_list))
     label = results[0][0]
     confidence = results[1][0]
-    log.info("classify_pdf_linear: label=%s confidence=%.2f" % (label, confidence))
+    log.debug("classify_pdf_linear: label=%s confidence=%.2f" % (label, confidence))
     return encode_confidence(label, confidence)
 
 
