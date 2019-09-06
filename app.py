@@ -10,6 +10,7 @@ from multiprocessing import Value
 import pdf_classifier
 import url_classifier
 import logging
+import time
 
 """
 
@@ -78,6 +79,7 @@ def classify_by_url():
     Each URL is separately classified.
     :return: json { "url1": 0.88, "url2": 0.92, "url3": 0.23 }
     """
+    start_ts = int(time.time()*1000)
     input = request.json or {}
     url_list = input.get('urls')
     with classify_url_counter.get_lock():
@@ -88,6 +90,9 @@ def classify_by_url():
         results_map[url] = confidence
     log.debug("results_map=%s" % (results_map))
     retmap = {"predictions": results_map}
+    finish_ts = int(time.time()*1000)
+    with classify_url_msec.get_lock():
+        classify_url_msec.value = classify_url_msec.value + finish_ts - start_ts
     return jsonify(retmap)
 
 @app.route('/classify/research-pub', methods = ['POST'])
@@ -97,6 +102,7 @@ def classify_pdf():
     params: "type" comma sep. list of { all, auto, image, bert, linear }
     :return: json
     """
+    start_ts = int(time.time() * 1000)
     input = request.json or {}
 
     # does this work?   pdf_content = request.files["pdf_content"]
@@ -119,6 +125,9 @@ def classify_pdf():
                        "urlmeta" : "20190722"
                                 }
                    }
+    finish_ts = int(time.time()*1000)
+    with classify_pdf_msec.get_lock():
+        classify_pdf_msec.value = classify_pdf_msec.value + finish_ts - start_ts
     return jsonify(results), 200
 
 @app.route('/stats', methods = ['GET'])
