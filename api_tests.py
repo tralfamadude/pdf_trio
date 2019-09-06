@@ -30,6 +30,7 @@ else:
     for k in predictions:
         print("%.2f : %s" % (predictions[k], k))
 
+
 #
 #    Test Linear Classify of a PDF
 #
@@ -37,21 +38,33 @@ else:
 
 def do_classify_on_pdf(pdf_file_path):
     target_url = API_BASE_URL + "classify/research-pub"
+    log.debug("process %s" % (pdf_file_path))
     with open(pdf_file_path, 'rb') as f:
         filename = os.path.basename(pdf_file_path)
-        type_param = "linear"   # ToDo: change to "all" when possible
+        type_param = "linear"  # ToDo: change to "all" when possible
         form_data = {
             "pdf_content": (filename, f),
             "type": type_param
         }
         response = requests.post(target_url, files=form_data)
+    print(response.headers)  # DEBUG
+    print(response.text)  # DEBUG
+
+
+def collect_files(dir_path):
+    ret_list = []
+    for fname in listdir(dir_path):
+        fname_full = dir_path + "/" + fname
+        if isfile(fname_full):
+            ret_list.append(fname_full)
+    return ret_list
 
 
 #  ./quick_test_samples/other and ./quick_test_samples/research/
-negative_samples = [f for f in listdir("quick_test_samples/other") if isfile(join("quick_test_samples/other", f))]
-positive_samples = [f for f in listdir("quick_test_samples/research") if isfile(join("quick_test_samples/research", f))]
+negative_samples = collect_files("quick_test_samples/other")
+print(negative_samples)
+positive_samples = collect_files("quick_test_samples/research")
 for fname in negative_samples:
     do_classify_on_pdf(fname)
-#for fname in positive_samples:
+# for fname in positive_samples:
 #    do_classify_on_pdf(fname)
-
