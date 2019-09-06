@@ -86,7 +86,9 @@ def classify_by_url():
     for url in url_list:
         confidence = url_classifier.classify_url(url)
         results_map[url] = confidence
-    return json.dumps(results_map), 200
+    log.debug("results_map=%s" % (results_map))
+    retmap = {"predictions": results_map}
+    return jsonify(retmap)
 
 @app.route('/classify/research-pub', methods = ['POST'])
 def classify_pdf():
