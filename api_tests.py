@@ -50,5 +50,8 @@ def do_classify_on_pdf(pdf_file_path):
 #  ./quick_test_samples/other and ./quick_test_samples/research/
 negative_samples = [f for f in listdir("quick_test_samples/other") if isfile(join("quick_test_samples/other", f))]
 positive_samples = [f for f in listdir("quick_test_samples/research") if isfile(join("quick_test_samples/research", f))]
-
+for fname in negative_samples:
+    do_classify_on_pdf(fname)
+#for fname in positive_samples:
+#    do_classify_on_pdf(fname)
 
