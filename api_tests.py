@@ -38,7 +38,7 @@ else:
 
 def do_classify_on_pdf(pdf_file_path):
     target_url = API_BASE_URL + "classify/research-pub"
-    log.debug("process %s" % (pdf_file_path))
+    print("process %s" % (pdf_file_path))
     with open(pdf_file_path, 'rb') as f:
         filename = os.path.basename(pdf_file_path)
         type_param = "linear"  # ToDo: change to "all" when possible
