@@ -37,17 +37,16 @@ else:
 # read in sample pdf one at a time and classify them
 
 def do_classify_on_pdf(pdf_file_path):
-    target_url = API_BASE_URL + "classify/research-pub"
+    target_url = API_BASE_URL + "classify/research-pub/linear"
     print("process %s" % (pdf_file_path))
     with open(pdf_file_path, 'rb') as f:
         filename = os.path.basename(pdf_file_path)
-        type_param = "linear"  # ToDo: change to "all" when possible
         form_data = {
-            "pdf_content": (filename, f),
-            "type": type_param
+            "pdf_content": (filename, f, "application/octet-stream")
         }
         response = requests.post(target_url, files=form_data)
     print(response.headers)  # DEBUG
+    print("-----")
     print(response.text)  # DEBUG
 
 

@@ -42,7 +42,7 @@ atexit.register(exit_handler)  # remove tmp_area on exit
 
 
 def tmp_file_name(prefix="f", suffix=".pdf"):
-    return tmp_path + "/" + str(prefix) + str(random.randint(1, 1000000000)) + suffix
+    return str(tmp_path) + "/" + str(prefix) + str(random.randint(1, 1000000000)) + suffix
 
 
 def write_tmp_file(content):

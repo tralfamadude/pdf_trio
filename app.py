@@ -96,24 +96,24 @@ def classify_by_url():
         classify_url_msec.value = classify_url_msec.value + finish_ts - start_ts
     return jsonify(retmap)
 
-@app.route('/classify/research-pub', methods = ['POST'])
-def classify_pdf():
+@app.route('/classify/research-pub/<string:ctype>', methods = ['POST'])
+def classify_pdf(ctype):
     """
     The given PDF is classified as a research publication or not. The PDF is not stored.
     params: "type" comma sep. list of { all, auto, image, bert, linear }
     :return: json
     """
     start_ts = int(time.time() * 1000)
+    log.debug("Request headers: %s" % (request.headers))
     # file_bytes = request.files  # ToDo: does this work?
-    type_param = request.form.get('type')
-    pdf_content = request.form.get('pdf_content')  # ToDo: is this needed?
-    if not type_param:
-        type_param = "auto"
+    #type_param = request.form.get('type')
+    log.debug("ctype=%s" % (ctype))
+    pdf_content = request.files['pdf_content']
     if not pdf_content or len(pdf_content) == 0:
         log.error("no pdf content")
         return "", 500
-    log.debug("type=%s  len(pdf_content=%d" % (type_param, len(pdf_content)))
-    results = pdf_classifier.classify_pdf_multi(type_param, pdf_content)
+    log.debug("type=%s  len(pdf_content)=%d" % (ctype, len(pdf_content)))
+    results = pdf_classifier.classify_pdf_multi(ctype, pdf_content)
     dummy_reply = {"is_research" : 0.94,
                    "image" : 0.96,
                    "linear" : 0.92,
