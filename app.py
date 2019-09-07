@@ -109,8 +109,8 @@ def classify_pdf(ctype):
     if ctype is None:
         ctype = "auto"
     pdf_filestorage = request.files['pdf_content']
-    log.debug("type=%s  pdf_content for %s" % (ctype, pdf_content.filename))
-    results = pdf_classifier.classify_pdf_multi(ctype, pdf_content)
+    log.debug("type=%s  pdf_content for %s" % (ctype, pdf_filestorage.filename))
+    results = pdf_classifier.classify_pdf_multi(ctype, pdf_filestorage)
     dummy_reply = {"is_research" : 0.94,
                    "image" : 0.96,
                    "linear" : 0.92,
