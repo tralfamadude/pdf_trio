@@ -45,9 +45,9 @@ def do_classify_on_pdf(pdf_file_path):
             "pdf_content": (filename, f, "application/octet-stream")
         }
         response = requests.post(target_url, files=form_data)
-    print(response.headers)  # DEBUG
+    # print(response.headers)  # DEBUG
     print("-----")
-    print(response.text)  # DEBUG
+    print("%s  %s" % (response.text, pdf_file_path))  # DEBUG
 
 
 def collect_files(dir_path):
@@ -63,7 +63,8 @@ def collect_files(dir_path):
 negative_samples = collect_files("quick_test_samples/other")
 print(negative_samples)
 positive_samples = collect_files("quick_test_samples/research")
+print(positive_samples)
 for fname in negative_samples:
     do_classify_on_pdf(fname)
-# for fname in positive_samples:
-#    do_classify_on_pdf(fname)
+for fname in positive_samples:
+    do_classify_on_pdf(fname)

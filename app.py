@@ -104,7 +104,7 @@ def classify_pdf(ctype):
     :return: json
     """
     start_ts = int(time.time() * 1000)
-    log.debug("Request headers: %s" % (request.headers))
+    #log.debug("Request headers: %s" % (request.headers))
     log.debug("ctype=%s" % (ctype))
     if ctype is None:
         ctype = "auto"
