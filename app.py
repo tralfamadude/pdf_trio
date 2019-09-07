@@ -105,14 +105,11 @@ def classify_pdf(ctype):
     """
     start_ts = int(time.time() * 1000)
     log.debug("Request headers: %s" % (request.headers))
-    # file_bytes = request.files  # ToDo: does this work?
-    #type_param = request.form.get('type')
     log.debug("ctype=%s" % (ctype))
-    pdf_content = request.files['pdf_content']
-    if not pdf_content or len(pdf_content) == 0:
-        log.error("no pdf content")
-        return "", 500
-    log.debug("type=%s  len(pdf_content)=%d" % (ctype, len(pdf_content)))
+    if ctype is None:
+        ctype = "auto"
+    pdf_filestorage = request.files['pdf_content']
+    log.debug("type=%s  pdf_content for %s" % (ctype, pdf_content.filename))
     results = pdf_classifier.classify_pdf_multi(ctype, pdf_content)
     dummy_reply = {"is_research" : 0.94,
                    "image" : 0.96,

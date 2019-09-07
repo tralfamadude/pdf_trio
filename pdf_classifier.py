@@ -6,6 +6,7 @@ import argparse
 import text_prep
 import pdf_util
 import logging
+from werkzeug import FileStorage
 
 log = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ if not TF_IMAGE_SERVER_HOSTPORT:
 TF_IMAGE_SERVER_HOST = TF_IMAGE_SERVER_HOSTPORT.split(":")[0]
 TF_IMAGE_SERVER_PORT = TF_IMAGE_SERVER_HOSTPORT.split(":")[1]
 
-def classify_pdf_multi(modes, pdf_content):
+def classify_pdf_multi(modes, pdf_filestorage):
     """
     Use the modes param to pick subclassifiers and make an ensemble conclusion.
 
@@ -43,7 +44,7 @@ def classify_pdf_multi(modes, pdf_content):
                                 }
                    }
     :param modes:  comma sep list of 1 or more {auto, image, linear, bert, all}
-    :param pdf_content: raw PDF content (binary).
+    :param pdf_filestorage: as FileStorage object (contains a stream).
     :return: map
     """
     results = {"version": version_map}
@@ -54,7 +55,9 @@ def classify_pdf_multi(modes, pdf_content):
     if 'all' in mode_list:
         mode_list = ['image', 'linear', 'bert']
     # write pdf content to tmp file
-    tmp_pdf_name = pdf_util.write_tmp_file(pdf_content)
+    tmp_pdf_name = pdf_util.tmp_file_name()
+    pdf_filestorage.save(tmp_pdf_name)
+    log.debug("stored pdf_content for %s in %s" % (pdf_filestorage.filename, tmp_pdf_name))
     # look ahead to see if text is required, so we can extract that now
     if ('linear' in mode_list) or ('bert' in mode_list) or ('auto' in mode_list):
         # extract text
