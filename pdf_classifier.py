@@ -93,6 +93,9 @@ def classify_pdf_multi(modes, pdf_filestorage):
         for classifier in mode_list:
             if classifier == "image":
                 jpg_file_page0 = pdf_util.extract_pdf_image(tmp_pdf_name)
+                if len(jpg_file_page0) == 0:
+                    log.debug("no jpg for %s" % (pdf_filestorage.filename))
+                    continue  # skip
                 # classify pdf_image_page0
                 confidence_image = classify_pdf_image(jpg_file_page0)
                 results[classifier] = confidence_image
@@ -102,6 +105,7 @@ def classify_pdf_multi(modes, pdf_filestorage):
             elif classifier == "linear":
                 if len(pdf_token_list) == 0:
                     # cannot use this classifier if no tokens extracted
+                    log.debug("no tokens extracted for %s" % (pdf_filestorage.filename))
                     continue  # skip
                 confidence_linear = classify_pdf_linear(pdf_token_list)
                 results[classifier] = confidence_linear
@@ -109,6 +113,7 @@ def classify_pdf_multi(modes, pdf_filestorage):
             elif classifier == "bert":
                 if len(pdf_token_list) == 0:
                     # cannot use this classifier if no tokens extracted
+                    log.debug("no tokens extracted for %s" % (pdf_filestorage.filename))
                     continue  # skip
                 pdf_token_list_trimmed = text_prep.trim_tokens(pdf_token_list, 512)
                 confidence_bert = classify_pdf_bert(pdf_token_list_trimmed)
@@ -118,7 +123,10 @@ def classify_pdf_multi(modes, pdf_filestorage):
                 log.warning("ignoring unknown classifier ref: " + classifier)
     pdf_util.remove_tmp_file(tmp_pdf_name)
     #  compute 'is_research' using confidence_values
-    confidence_overall = sum(confidence_values) / len(confidence_values)
+    if len(confidence_values) != 0:
+        confidence_overall = sum(confidence_values) / len(confidence_values)
+        # insert confidence_overall
+        results["is_research"] = confidence_overall
     return results
 
 
