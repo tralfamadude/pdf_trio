@@ -99,9 +99,13 @@ def extract_pdf_image(pdf_tmp_file, page=0):
     jpg_name = pdf_tmp_file + ".jpg"
     pageSpec = "[" + str(page) + "]"
     # start subprocess
-    pp = Popen(['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
-                '-quality', '95', '-thumbnail', '156x', '-gravity',  'north', '-extent', '224x224',
-                jpg_name])
+    # ToDo: use pipes instead so that stderr can be collected (and not just mixed into main process stderr)
+    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
+             '-quality', '95', '-thumbnail', '156x', '-gravity', 'north', '-extent', '224x224',
+             jpg_name]
+    if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+        log.debug("ImageMagick Command=" + " ".join(convert_cmd))
+    pp = Popen(convert_cmd)
     t0 = time.time()
     while time.time() - t0 < 5:  # 5 sec max, typical is less than 300msec
         ret = pp.poll()
@@ -110,12 +114,14 @@ def extract_pdf_image(pdf_tmp_file, page=0):
         time.sleep(0.05)
     ret = pp.poll()
     if ret is None:
-        log.warning("convert command did not terminate in %.2f seconds, terminating." % (time.time()-t0))
+        log.warning("convert command did not terminate in %.2f seconds for %s, terminating." %
+                    (time.time()-t0, pdf_tmp_file))
         pp.terminate()  # give up
     # check if jpg file exists and sufficient size
     if os.path.exists(jpg_name):
         if os.path.getsize(jpg_name) <= 3000:
             # jpg too small, most likely blank
+            log.debug("jpg too small for %s, so assumed to be a blank page; removing" % (pdf_tmp_file))
             remove_tmp_file(jpg_name)
             return ""
         else:
