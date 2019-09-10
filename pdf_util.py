@@ -29,6 +29,7 @@ if TEMP is None:
 
 start_datetime = datetime.datetime.now()
 start_timestamp = start_datetime.isoformat().split('.')[0]
+start_timestamp = start_timestamp.replace(":", "").replace("-", "")
 tmp_area = TEMP + "/research-pub-area_" + start_timestamp
 tmp_path = pathlib.Path(tmp_area)
 tmp_path.mkdir(parents=True, exist_ok=True)
