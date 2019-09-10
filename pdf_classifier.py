@@ -225,6 +225,8 @@ def classify_pdf_image(jpg_file):
         lines = outs.split('\n')
         for aline in lines:
             mytokens = aline.split()
+            if len(mytokens) < 3:
+                continue
             label = mytokens[0]
             if label == "research" or label == "other":
                 confidence = float(mytokens[1])

@@ -14,9 +14,22 @@ conda create --name research-pub python=3.7  numpy flask
 conda activate research-pub
 pip install fasttext
 pip install -r requirements.txt
-sudo apt-get install poppler-utils
-sudo apt-get install imagemagick
+sudo apt-get install -y poppler-utils
+sudo apt-get install -y imagemagick
+sudo apt-get install -y libmagickcore-6.q16-2-extra
+sudo apt-get install -y ghostscript
+sudo apt-get install -y netpbm
+sudo -u root  apt-get install gsfonts-other
 ```
+edit /etc/ImageMagick/policy.xml to change: 
+```
+<policy domain="coder" rights="none" pattern="PDF" />
+```
+To: 
+```
+<policy domain="coder" rights="read" pattern="PDF" />
+```
+
 We expect imagemagick 6.x; when 7.x is used, the binary will not be called convert anymore.
 
 ## Back-Backend Services
