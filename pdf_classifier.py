@@ -89,7 +89,8 @@ def classify_pdf_multi(modes, pdf_filestorage):
             results['image'] = confidence_image
             confidence_values.append(confidence_image)
             # remove tmp jpg
-            pdf_util.remove_tmp_file(jpg_file_page0)
+            if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
+                pdf_util.remove_tmp_file(jpg_file_page0)
     else:
         # apply named classifiers
         for classifier in mode_list:
@@ -103,7 +104,8 @@ def classify_pdf_multi(modes, pdf_filestorage):
                 results[classifier] = confidence_image
                 confidence_values.append(confidence_image)
                 # remove tmp jpg
-                pdf_util.remove_tmp_file(jpg_file_page0)
+                if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
+                    pdf_util.remove_tmp_file(jpg_file_page0)
             elif classifier == "linear":
                 if len(pdf_token_list) == 0:
                     # cannot use this classifier if no tokens extracted
@@ -123,7 +125,8 @@ def classify_pdf_multi(modes, pdf_filestorage):
                 confidence_values.append(confidence_bert)
             else:
                 log.warning("ignoring unknown classifier ref: " + classifier)
-    pdf_util.remove_tmp_file(tmp_pdf_name)
+    if logging.getLogger().getEffectiveLevel() != logging.DEBUG:
+        pdf_util.remove_tmp_file(tmp_pdf_name)
     #  compute 'is_research' using confidence_values
     if len(confidence_values) != 0:
         confidence_overall = sum(confidence_values) / len(confidence_values)
@@ -215,6 +218,9 @@ def classify_pdf_image(jpg_file):
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         outs, errs = pp.communicate(timeout=10)
+        # dump stderr if DEBUG
+        if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+            log.debug("infer_image_new.py stderr: ", errs)
         # parse outs     ex: research 0.5082055 ./tmp/0b4997a068e557eb92b6adf7875248ec7292dd4a.jpg
         lines = outs.split('\n')
         for aline in lines:
