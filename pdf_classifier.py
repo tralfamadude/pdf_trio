@@ -205,9 +205,12 @@ def classify_pdf_image(jpg_file):
     myenv = {"dummy": "0",
              "CONDA_DEFAULT_ENV": "tf_hub",
              "CONDA_PYTHON_EXE": "/home/peb/miniconda3/bin/python",
-             "HOME": "/home/peb/bin:/home/peb/miniconda3/envs/tf_hub/bin:/home/peb/miniconda3/bin:/home/peb/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+             "HOME": "/home/peb",
+             "PATH": "/home/peb/bin:/home/peb/miniconda3/envs/tf_hub/bin:/home/peb/miniconda3/bin:/home/peb/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
              "CONDA_EXE": "/home/peb/miniconda3/bin/conda",
-             "CONDA_PREFIX_1": "/home/peb/miniconda3"
+             "CONDA_PREFIX": "/home/peb/miniconda3/envs/tf_hub",
+             "CONDA_PREFIX_1": "/home/peb/miniconda3",
+             "CONDA_SHLVL":"2"
              }
     w_dir = "/home/peb/ws/tf_hub_image_classifier"
     cmd = [ w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
