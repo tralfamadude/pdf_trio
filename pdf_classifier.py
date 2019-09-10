@@ -211,7 +211,7 @@ def classify_pdf_image(jpg_file):
             '--labels='+w_dir+'/out/retrained_labels.txt', '--input_layer=Placeholder', '--output_layer=final_result']
     mycwd = "/home/peb/ws/tf_hub_image_classifier"
     t0 = time.time()
-    pp = subprocess.Popen(cmd, encoding='utf8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
+    pp = subprocess.Popen(cmd, encoding='utf-8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
         outs, errs = pp.communicate(timeout=10)

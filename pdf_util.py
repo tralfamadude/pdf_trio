@@ -97,7 +97,7 @@ def extract_pdf_image(pdf_tmp_file, page=0):
         empty string if no good image produced.
     """
     jpg_name = pdf_tmp_file + ".jpg"
-    pageSpec = "[" + page + "]"
+    pageSpec = "[" + str(page) + "]"
     # start subprocess
     pp = Popen(['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
                 '-quality', '95', '-thumbnail', '156x', '-gravity',  'north', '-extent', '224x224',
