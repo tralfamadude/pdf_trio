@@ -220,7 +220,7 @@ def classify_pdf_image(jpg_file):
     pp = subprocess.Popen(cmd, encoding='utf-8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     try:
-        outs, errs = pp.communicate(timeout=10)
+        outs, errs = pp.communicate(timeout=30)
         # dump stderr if DEBUG
         if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
             log.debug("infer_image_new.py stderr: ", errs)
@@ -236,9 +236,9 @@ def classify_pdf_image(jpg_file):
                 if confidence > 0.5:
                     ret = encode_confidence(label, confidence)
                     break
-    except TimeoutExpired:
+    except subprocess.TimeoutExpired:
         pp.kill()
-        # drain residue so process can really finish
+        # drain residue so subprocess can really finish
         outs, errs = proc.communicate()
         log.warning("classify_pdf_image, command did not terminate in %.2f seconds, terminating." % (time.time()-t0))
 
