@@ -2,9 +2,11 @@
 import fasttext
 from fasttext import load_model
 import os
+import time
 import argparse
 import text_prep
 import pdf_util
+import subprocess
 import logging
 from werkzeug import FileStorage
 
@@ -183,7 +185,7 @@ def classify_pdf_bert(pdf_token_list):
     Apply BERT model to content
 
     :param pdf_tokens: cleaned tokens list from pdf content
-    :return: confidence as type float with range [0.0,1.0] that example is positive
+    :return: encoded confidence as type float with range [0.5,1.0] that example is positive
     """
     #log.info("classify_pdf_bert: label=%s confidence=%.2f" % (label, confidence))
     return 0.599  # dummy
@@ -193,11 +195,45 @@ def classify_pdf_image(jpg_file):
     """
     Apply image model to content image
 
-    :param jpg_file: tmp jpg image file name.
-    :return: confidence as type float with range [0.0,1.0] that example is positive
+    :param jpg_file: tmp jpg image file name, full path.
+    :return: encoded confidence as type float with range [0.5,1.0] that example is positive
     """
+    ret = 0.5  # lowest confidence encoded value
+    myenv = {"dummy": "0",
+             "CONDA_DEFAULT_ENV": "tf_hub",
+             "CONDA_PYTHON_EXE": "/home/peb/miniconda3/bin/python",
+             "HOME": "/home/peb/bin:/home/peb/miniconda3/envs/tf_hub/bin:/home/peb/miniconda3/bin:/home/peb/miniconda3/condabin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+             "CONDA_EXE": "/home/peb/miniconda3/bin/conda",
+             "CONDA_PREFIX_1": "/home/peb/miniconda3"
+             }
+    w_dir = "/home/peb/ws/tf_hub_image_classifier"
+    cmd = [ w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
+            '--labels='+w_dir+'/out/retrained_labels.txt', '--input_layer=Placeholder', '--output_layer=final_result']
+    mycwd = "/home/peb/ws/tf_hub_image_classifier"
+    t0 = time.time()
+    pp = subprocess.Popen(cmd, encoding='utf8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        outs, errs = pp.communicate(timeout=10)
+        # parse outs     ex: research 0.5082055 ./tmp/0b4997a068e557eb92b6adf7875248ec7292dd4a.jpg
+        lines = outs.split('\n')
+        for aline in lines:
+            mytokens = aline.split()
+            label = mytokens[0]
+            if label == "research" or label == "other":
+                confidence = float(mytokens[1])
+                if confidence > 0.5:
+                    ret = encode_confidence(label, confidence)
+                    break
+    except TimeoutExpired:
+        pp.kill()
+        # drain residue so process can really finish
+        outs, errs = proc.communicate()
+        log.warning("classify_pdf_image, command did not terminate in %.2f seconds, terminating." % (time.time()-t0))
+
+
     #log.info("classify_pdf_image: label=%s confidence=%.2f" % (label, confidence))
-    return 0.599  # dummy
+    return ret
 
 
 if __name__ == '__main__':
