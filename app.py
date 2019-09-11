@@ -1,12 +1,8 @@
 #!/usr/bin/env python3
 
 from flask import Flask
-from flask import request, jsonify, abort, render_template
-import datetime
-import json
+from flask import request, jsonify, abort
 import html
-import config
-from multiprocessing import Value
 import pdf_classifier
 import url_classifier
 import logging
@@ -16,12 +12,6 @@ import time
 
 """
 
-classify_url_counter = Value('i', 0)
-classify_pdf_counter = Value('i', 0)
-classify_pdf_msec = Value('i', 0)
-classify_url_msec = Value('i', 0)
-
-
 app = Flask(__name__)
 
 logging.basicConfig(filename='research-pub.log', level=logging.DEBUG)
@@ -30,12 +20,7 @@ log.info("STARTING   STARTING   STARTING   STARTING   STARTING   STARTING   STAR
 
 @app.route('/', methods = ['GET'])
 def toplevel():
-    # action can depend on run mode:  (needs to be set up somehow)
-    #if config.IS_PRODUCTION:
-    #    return report_stats()
-    #if config.IS_LOCAL_DEV:
-    #    return report_stats()
-    return report_stats()
+    return "okay!"
 
 @app.route('/api/list', methods = ['GET'])
 def list_api():
@@ -88,12 +73,6 @@ def classify_by_url():
         results_map[url] = confidence
     log.debug("results_map=%s" % (results_map))
     retmap = {"predictions": results_map}
-    # update counters
-    with classify_url_counter.get_lock():
-        classify_url_counter.value += 1
-    finish_ts = int(time.time()*1000)
-    with classify_url_msec.get_lock():
-        classify_url_msec.value = classify_url_msec.value + finish_ts - start_ts
     return jsonify(retmap)
 
 @app.route('/classify/research-pub/<string:ctype>', methods = ['POST'])
@@ -103,7 +82,6 @@ def classify_pdf(ctype):
     params: "type" comma sep. list of { all, auto, image, bert, linear }
     :return: json
     """
-    start_ts = int(time.time() * 1000)
     #log.debug("Request headers: %s" % (request.headers))
     log.debug("ctype=%s" % (ctype))
     if ctype is None:
@@ -122,37 +100,7 @@ def classify_pdf(ctype):
                        "urlmeta" : "20190722"
                                 }
                    }
-    # update counters
-    with classify_pdf_counter.get_lock():
-        classify_pdf_counter.value += 1
-    finish_ts = int(time.time()*1000)
-    with classify_pdf_msec.get_lock():
-        classify_pdf_msec.value = classify_pdf_msec.value + finish_ts - start_ts
     return jsonify(results), 200
-
-@app.route('/stats', methods = ['GET'])
-def report_stats():
-    """
-    Show statistics from the current run of this service.
-    :return:
-    """
-    local_classify_url_counter = 0
-    local_classify_pdf_counter = 0
-    local_classify_url_msec = 0
-    local_classify_pdf_msec = 0
-
-    with classify_url_counter.get_lock():
-        local_classify_url_counter = classify_url_counter.value
-    with classify_pdf_counter.get_lock():
-        local_classify_pdf_counter = classify_pdf_counter.value
-    with classify_url_msec.get_lock():
-        local_classify_url_msec = classify_url_msec.value
-    with classify_pdf_msec.get_lock():
-        local_classify_pdf_msec = classify_pdf_msec.value
-
-    # show stats
-    return "url_classify_count={}\npdf_classify_count={}\nclassify_url_msec={}\nclassify_pdf_msec={}".\
-        format(local_classify_url_counter, local_classify_pdf_counter, local_classify_url_msec, local_classify_pdf_msec)
 
 
 if __name__ == '__main__':

@@ -239,7 +239,7 @@ def classify_pdf_image(jpg_file):
     except subprocess.TimeoutExpired:
         pp.kill()
         # drain residue so subprocess can really finish
-        outs, errs = proc.communicate()
+        outs, errs = pp.communicate()
         log.warning("classify_pdf_image, command did not terminate in %.2f seconds, terminating." % (time.time()-t0))
 
 
