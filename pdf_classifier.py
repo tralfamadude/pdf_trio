@@ -212,10 +212,10 @@ def classify_pdf_image(jpg_file):
              "CONDA_PREFIX_1": "/home/peb/miniconda3",
              "CONDA_SHLVL":"2"
              }
-    w_dir = "/home/peb/ws/tf_hub_image_classifier"
+    w_dir = "../tf_hub_image_classifier"
     cmd = [ w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
             '--labels='+w_dir+'/out/retrained_labels.txt', '--input_layer=Placeholder', '--output_layer=final_result']
-    mycwd = "/home/peb/ws/tf_hub_image_classifier"
+    mycwd = "/home/peb/ws/tf_hub_image_classifier"  # ToDo: check if we really need this, use discovered value
     t0 = time.time()
     pp = subprocess.Popen(cmd, encoding='utf-8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
