@@ -270,17 +270,19 @@ def classify_pdf_image(jpg_file):
     img299 = cv2.resize(img, dsize=(299, 299), interpolation=cv2.INTER_LINEAR)
     my_images = np.reshape(img299, (-1, 299, 299, 3))
     req_json = json.dumps({"signature_name": "serving_default", "instances": my_images.tolist()})
-    response = requests.post(image_tf_server_url, data=req_json, headers=json_content_header)
-    if response.status_code == 200:
-        response_vec = response.json()["predictions"][0]
-        log.debug("got response ", str(response_vec))
-        confidence_other = response_vec[0]
-        confidence_research = response_vec[1]
-        log.debug("image classify %s  other=%.2f research=%.2f" % (jpg_file, confidence_other, confidence_research))
-        if confidence_research > confidence_other:
-            ret = encode_confidence("research", confidence_research)
-        else:
-            ret = encode_confidence("other", confidence_other)
+    try:
+        response = requests.post(image_tf_server_url, data=req_json, headers=json_content_header)
+        if response.status_code == 200:
+            response_vec = response.json()["predictions"][0]
+            confidence_other = response_vec[0]
+            confidence_research = response_vec[1]
+            log.debug("image classify %s  other=%.2f research=%.2f" % (jpg_file, confidence_other, confidence_research))
+            if confidence_research > confidence_other:
+                ret = encode_confidence("research", confidence_research)
+            else:
+                ret = encode_confidence("other", confidence_other)
+    except Exception:
+        log.warning("exception occurred processing REST tensorflow-serving for %s" % jpg_file)
     return ret
 
 
