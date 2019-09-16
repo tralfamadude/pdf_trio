@@ -1,4 +1,5 @@
 #!/bin/bash
+eval "$(conda shell.bash hook)"
 conda activate research-pub
 
 export FT_MODEL=/home/peb/ws/fastText/dataset20000.bin
