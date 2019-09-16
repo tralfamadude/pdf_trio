@@ -8,6 +8,10 @@ import text_prep
 import pdf_util
 import subprocess
 import logging
+import cv2
+import numpy as np
+import json
+import requests
 from werkzeug import FileStorage
 
 log = logging.getLogger(__name__)
@@ -29,6 +33,10 @@ if not TF_IMAGE_SERVER_HOSTPORT:
     raise ValueError('Missing TF image classifier host:port spec, define env var TF_IMAGE_SERVER_HOSTPORT=host:port')
 TF_IMAGE_SERVER_HOST = TF_IMAGE_SERVER_HOSTPORT.split(":")[0]
 TF_IMAGE_SERVER_PORT = TF_IMAGE_SERVER_HOSTPORT.split(":")[1]
+
+json_content_header = {"Content-Type": "application/json"}
+image_tf_server_url = "http://%s:%s/v1/models/tensorflow_model:predict" % (TF_IMAGE_SERVER_HOST, TF_IMAGE_SERVER_PORT)
+
 
 def classify_pdf_multi(modes, pdf_filestorage):
     """
@@ -194,7 +202,7 @@ def classify_pdf_bert(pdf_token_list):
     return 0.599  # dummy
 
 
-def classify_pdf_image(jpg_file):
+def classify_pdf_image_via_exec(jpg_file):
     """
     Apply image model to content image
 
@@ -215,7 +223,7 @@ def classify_pdf_image(jpg_file):
     w_dir = "../tf_hub_image_classifier"
     cmd = [ w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
             '--labels='+w_dir+'/out/retrained_labels.txt', '--input_layer=Placeholder', '--output_layer=final_result']
-    mycwd = "/home/peb/ws/tf_hub_image_classifier"  # ToDo: check if we really need this, use discovered value
+    mycwd = "."
     t0 = time.time()
     pp = subprocess.Popen(cmd, encoding='utf-8', env=myenv, cwd=mycwd, bufsize=1, universal_newlines=True,
                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -244,6 +252,35 @@ def classify_pdf_image(jpg_file):
 
 
     #log.info("classify_pdf_image: label=%s confidence=%.2f" % (label, confidence))
+    return ret
+
+
+
+def classify_pdf_image(jpg_file):
+    """
+    Apply image model to content image using tensorflow-serving.
+
+    :param jpg_file: tmp jpg image file name, full path.
+    :return: encoded confidence as type float with range [0.5,1.0] that example is positive
+    """
+    ret = 0.5  # lowest confidence encoded value
+    img = cv2.imread(jpg_file).astype(np.float32)
+    # we have 224x224, resize to 299x299 for shape (224, 224, 3)
+    # ToDo: target size could vary, depending on the pre-trained model, should auto-adjust
+    img299 = cv2.resize(img, dsize=(299, 299), interpolation=cv2.INTER_LINEAR)
+    my_images = np.reshape(img299, (-1, 299, 299, 3))
+    req_json = json.dumps({"signature_name": "serving_default", "instances": my_images.tolist()})
+    response = requests.post(image_tf_server_url, data=req_json, headers=json_content_header)
+    if response.status_code == 200:
+        response_vec = response.json()["predictions"][0]
+        log.debug("got response ", str(response_vec))
+        confidence_other = response_vec[0]
+        confidence_research = response_vec[1]
+        log.debug("image classify %s  other=%.2f research=%s" % (jpg_file, confidence_other, confidence_research))
+        if confidence_research > confidence_other:
+            ret = encode_confidence("research", confidence_research)
+        else:
+            ret = encode_confidence("other", confidence_other)
     return ret
 
 

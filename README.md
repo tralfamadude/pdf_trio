@@ -13,6 +13,7 @@ The following env vars must be defined to run this API service
 conda create --name research-pub python=3.7  numpy flask
 conda activate research-pub
 pip install fasttext
+pip install opencv-python-headless
 pip install -r requirements.txt
 sudo apt-get install -y poppler-utils
 sudo apt-get install -y imagemagick
