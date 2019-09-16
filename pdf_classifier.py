@@ -276,7 +276,7 @@ def classify_pdf_image(jpg_file):
         log.debug("got response ", str(response_vec))
         confidence_other = response_vec[0]
         confidence_research = response_vec[1]
-        log.debug("image classify %s  other=%.2f research=%s" % (jpg_file, confidence_other, confidence_research))
+        log.debug("image classify %s  other=%.2f research=%.2f" % (jpg_file, confidence_other, confidence_research))
         if confidence_research > confidence_other:
             ret = encode_confidence("research", confidence_research)
         else:

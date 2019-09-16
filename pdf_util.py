@@ -2,7 +2,7 @@ import os
 import pathlib
 import time
 import shutil
-from subprocess import Popen
+import subprocess
 import random
 import datetime
 import atexit
@@ -88,7 +88,7 @@ def extract_pdf_text(pdf_tmp_file):
     return text
 
 
-def extract_pdf_image(pdf_tmp_file, page=0):
+def extract_pdf_image_prev(pdf_tmp_file, page=0):
     """
     ImageMagick (and ghostscript) is used to generate the image.
     Caller is responsible for removing the jpg.
@@ -130,4 +130,51 @@ def extract_pdf_image(pdf_tmp_file, page=0):
             return jpg_name
     else:
         # no jpg file was produced
+        return ""
+
+
+def extract_pdf_image(pdf_tmp_file, page=0):
+    """
+    ImageMagick (and ghostscript) is used to generate the image.
+    Caller is responsible for removing the jpg.
+    :param pdf_tmp_file: path to temp file holding pdf content.
+    :param page:  page number (from 0)
+    :return: filename of jpg image in temporary area, caller should remove it when done to avoid accumulation,
+        empty string returned if no good image produced.
+    """
+    jpg_name = pdf_tmp_file + ".jpg"
+    pageSpec = "[" + str(page) + "]"
+    # start subprocess
+    # Use pipes so that stderr can be collected (and not just mixed into main process stderr, hiding other errors)
+
+    # the parameters here must match training to maximize accuracy
+    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
+             '-quality', '95', '-thumbnail', '156x', '-gravity', 'north', '-extent', '224x224',
+             jpg_name]
+    if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
+        log.debug("ImageMagick Command=" + " ".join(convert_cmd))
+    t0 = time.time()
+    pp = subprocess.Popen(convert_cmd, encoding='utf-8', bufsize=1, universal_newlines=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        outs, errs = pp.communicate(timeout=30)
+    except subprocess.TimeoutExpired:
+        pp.kill()
+        # drain residue so subprocess can really finish
+        outs, errs = pp.communicate()
+        log.warning("convert command (imagemagick) on %s did not terminate in %.2f seconds, terminating." %
+                    (pdf_tmp_file, time.time()-t0))
+    # check if jpg file exists and sufficient size
+    if os.path.exists(jpg_name):
+        if os.path.getsize(jpg_name) <= 3000:
+            # jpg too small, most likely blank
+            log.debug("jpg too small for %s, so assumed to be a blank page; removing" % pdf_tmp_file)
+            remove_tmp_file(jpg_name)
+            return ""
+        else:
+            # jpg file exists, sufficient size
+            return jpg_name
+    else:
+        # no jpg file was produced
+        log.warning("no jpg produced by imagemagick for %s" % pdf_tmp_file)
         return ""
