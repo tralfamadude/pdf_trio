@@ -4,7 +4,7 @@ conda activate research-pub
 
 export FT_MODEL=/home/peb/ws/fastText/dataset20000.bin
 export FT_URL_MODEL=/home/peb/ws/fastText/url_test_20000.bin
-export TF_IMAGE_SERVER_HOSTPORT=localhost:6800
+export TF_IMAGE_SERVER_HOSTPORT=localhost:8501
 
 if [ ! -e ./app.py ]; then
   echo "the current working dir. ($(pwd)) does not have the required app.py"
