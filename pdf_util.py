@@ -62,7 +62,7 @@ def remove_tmp_file(name):
         os.remove(name)
 
 
-def extract_pdf_text(pdf_tmp_file):
+def extract_pdf_text_prev(pdf_tmp_file):
     """
     Extract text from PDF. The text is extracted in human-reading order. EOL chars are present.
     :param pdf_tmp_file: path to (temp) pdf file.
@@ -70,7 +70,8 @@ def extract_pdf_text(pdf_tmp_file):
     """
     txt_name = pdf_tmp_file + ".txt"
     # start subprocess
-    pp = Popen(['pdftotext', '-nopgbrk', '-eol', 'unix', '-enc', 'UTF-8', pdf_tmp_file, txt_name])
+    p_args = ['pdftotext', '-nopgbrk', '-eol', 'unix', '-enc', 'UTF-8', pdf_tmp_file, txt_name]
+    pp = Popen(p_args)
     t0 = time.time()
     while time.time() - t0 < 5:  # 5 sec max, typical is less than 300msec
         ret = pp.poll()
@@ -81,6 +82,33 @@ def extract_pdf_text(pdf_tmp_file):
     if ret is None:
         log.warning("pdftotext command did not terminate in %.2f seconds, terminating." % (time.time()-t0))
         pp.terminate()  # give up
+    # get text from file
+    with open(txt_name, 'r', encoding='utf-8') as f:
+        text = f.read()
+    remove_tmp_file(txt_name)
+    return text
+
+
+def extract_pdf_text(pdf_tmp_file):
+    """
+    Extract text from PDF. The text is extracted in human-reading order. EOL chars are present.
+    :param pdf_tmp_file: path to (temp) pdf file.
+    :return: string of extracted human readable text from PDF, zero length string if could not extract or no text.
+    """
+    txt_name = pdf_tmp_file + ".txt"
+    # start subprocess
+    p_args = ['pdftotext', '-nopgbrk', '-eol', 'unix', '-enc', 'UTF-8', pdf_tmp_file, txt_name]
+    t0 = time.time()
+    pp = subprocess.Popen(p_args, encoding='utf-8', bufsize=1, universal_newlines=True,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    try:
+        outs, errs = pp.communicate(timeout=30)
+        # outs and errs are file handles
+    except subprocess.TimeoutExpired:
+        pp.kill()
+        # drain residue so subprocess can really finish
+        outs, errs = pp.communicate()
+        log.warning("pdftotext, command did not terminate in %.2f seconds, terminating." % (time.time() - t0))
     # get text from file
     with open(txt_name, 'r', encoding='utf-8') as f:
         text = f.read()
