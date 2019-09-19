@@ -31,8 +31,11 @@ pip install --upgrade oauth2client
 #     
 export BERT_BASE_DIR=gs://${BUCKET}/multi_cased_L-12_H-768_A-12
 
-BOUT=bert_output_$(date '+%Y%m%dT%H')
+TS=$(date '+%Y%m%dT%H')
+BOUT=bert_output_$TS
 
+#                          Training
+#
 nohup python ./run_classifier.py \
 --task_name=cola \
 --do_train=true \
@@ -55,8 +58,14 @@ nohup python ./run_classifier.py \
 
 # wait for it to finish before proceeding
 wait
-# model checkpoint name and bert_output dir MUST be manually substituted below to use largest value ckpt
+# OLD: model checkpoint name and bert_output dir MUST be manually substituted below to use largest value ckpt
 
+# savedmodel format.
+# next level dir is Unix epoch number that is not the logical version (but could be, in a pinch)
+SAVED_MODEL=gs://${BUCKET}/bert_finetuned_${TS}
+
+#          Testing
+#
 python ./run_classifier.py \
 --task_name=cola \
 --do_predict=true \
