@@ -8,7 +8,7 @@ import text_prep
 import pdf_util
 import subprocess
 import logging
-import cv2
+import cv2  # pip install opencv-python  to get this
 import numpy as np
 import json
 import requests
@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 version_map = {
     "image": "20190708",
     "linear": "20190720",
-    "bert": "20190807",
+    "bert": "20190918",
     "urlmeta": "20190722"
 }
 
@@ -34,9 +34,23 @@ if not TF_IMAGE_SERVER_HOSTPORT:
 TF_IMAGE_SERVER_HOST = TF_IMAGE_SERVER_HOSTPORT.split(":")[0]
 TF_IMAGE_SERVER_PORT = TF_IMAGE_SERVER_HOSTPORT.split(":")[1]
 
+TF_BERT_SERVER_HOSTPORT = os.environ.get('TF_BERT_SERVER_HOSTPORT')
+if not TF_BERT_SERVER_HOSTPORT:
+    raise ValueError('Missing TF BERT classifier host:port spec, define env var TF_BERT_SERVER_HOSTPORT=host:port')
+TF_BERT_SERVER_HOST = TF_BERT_SERVER_HOSTPORT.split(":")[0]
+TF_BERT_SERVER_PORT = TF_BERT_SERVER_HOSTPORT.split(":")[1]
+
+TF_BERT_VOCAB_PATH = os.environ.get('TF_BERT_VOCAB_PATH')
+if not TF_BERT_VOCAB_PATH:
+    raise ValueError('TF_BERT_VOCAB_PATH is not set to the path to vocab.txt')
+if not os.path.exists(TF_BERT_VOCAB_PATH) and os.path.isfile(TF_BERT_VOCAB_PATH):
+    raise ValueError('TF_BERT_VOCAB_PATH target does not exist: %s' % TF_BERT_VOCAB_PATH)
+bert_vocab = text_prep.load_bert_vocab(TF_BERT_VOCAB_PATH)
+
 json_content_header = {"Content-Type": "application/json"}
 image_tf_server_url = "http://%s:%s/v1/models/tensorflow_model:predict" % (TF_IMAGE_SERVER_HOST, TF_IMAGE_SERVER_PORT)
 
+bert_tf_server_url = "http://%s:%s/v1/models/bert_model:predict" % (TF_BERT_SERVER_HOST, TF_BERT_SERVER_PORT)
 
 def classify_pdf_multi(modes, pdf_filestorage):
     """
@@ -72,7 +86,7 @@ def classify_pdf_multi(modes, pdf_filestorage):
     if ('linear' in mode_list) or ('bert' in mode_list) or ('auto' in mode_list):
         # extract text
         pdf_raw_text = pdf_util.extract_pdf_text(tmp_pdf_name)
-        if len(pdf_raw_text) < 500:
+        if len(pdf_raw_text) < 300:
             pdf_token_list = []  # too short to be useful
         else:
             pdf_token_list = text_prep.extract_tokens(pdf_raw_text)
@@ -191,15 +205,46 @@ def classify_pdf_linear(pdf_token_list):
     return encode_confidence(label, confidence)
 
 
-def classify_pdf_bert(pdf_token_list):
+def classify_pdf_bert(pdf_token_list, trace_id=""):
     """
-    Apply BERT model to content
+    Apply BERT model to content to classify given token list.
 
-    :param pdf_tokens: cleaned tokens list from pdf content
+    :param pdf_tokens: cleaned tokens list from pdf content, trimmed to not exceed max tokens (512)
+    :param trace_id: string for doc id, if known.
     :return: encoded confidence as type float with range [0.5,1.0] that example is positive
     """
-    #log.info("classify_pdf_bert: label=%s confidence=%.2f" % (label, confidence))
-    return 0.599  # dummy
+    token_ids = text_prep.convert_to_bert_vocab(bert_vocab, pdf_token_list)
+    tcount = len(token_ids)
+    if tcount < 512:
+        for j in range(tcount, 512):
+            token_ids.append(0)
+    # add entries so that token_ids is 512 length
+    # for REST request, need examples=[{"input_ids": [], "input_mask":[], "label_ids":[0], "segment_ids":[]}]
+    input_ids = token_ids
+    if tcount < 512:
+        input_mask = np.concatenate((np.ones(tcount, dtype=int),  np.zeros(512-tcount, dtype=int)), axis=0).tolist()
+    else:
+        input_mask = np.ones(512, dtype=int).tolist()
+    label_ids = [0]  # dummy, one int, not needed for prediction
+    segment_ids = np.zeros(512, dtype=int).tolist()
+    evalue = {"input_ids": input_ids, "input_mask": input_mask, "label_ids": label_ids, "segment_ids": segment_ids}
+    log.debug("BERT: proposed request has: %s" % evalue)
+    req_json = json.dumps({"signature_name": "serving_default", "examples": evalue})
+    try:
+        response = requests.post(bert_tf_server_url, data=req_json, headers=json_content_header)
+        if response.status_code == 200:
+            response_vec = response.json()["predictions"][0]
+            confidence_other = response_vec[0]
+            confidence_research = response_vec[1]
+            log.debug("bert classify %s  other=%.2f research=%.2f" % (trace_id, confidence_other, confidence_research))
+            if confidence_research > confidence_other:
+                ret = encode_confidence("research", confidence_research)
+            else:
+                ret = encode_confidence("other", confidence_other)
+    except Exception:
+        log.warning("exception occurred processing REST BERT tensorflow-serving for %s" % trace_id)
+    return ret
+
 
 
 def classify_pdf_image_via_exec(jpg_file):
