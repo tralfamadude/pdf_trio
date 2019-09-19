@@ -1,3 +1,4 @@
+import collections
 import re
 import logging
 import string
@@ -63,3 +64,38 @@ def trim_tokens(file_token_list, max_tokens):
         file_token_list = file_token_list[:front_end_offset] + file_token_list[back_begin_offset:]
     return file_token_list
 
+
+def load_bert_vocab(vocab_file):
+    """
+    Loads a vocabulary file into a dictionary.
+    :param vocab_file:  path to vocab.txt from pre-trained BERT model
+    :return: dictionary.
+    """
+    vocab = collections.OrderedDict()
+    index = 0
+    with open(vocab_file, 'r', encoding='utf-8') as file:
+        while True:
+            token = file.readline()
+            if not token:
+                break
+            token = token.strip()
+            vocab[token] = index
+            index += 1
+    return vocab
+
+
+def convert_to_bert_vocab(vocab, items):
+    """
+    Converts a sequence of [tokens|ids] using the vocab.
+    Tokens not in dictionary are skipped.
+    :param vocab: dictionary
+    :param items: list of tokens (strings)
+    :return:
+    """
+    output = []
+    for item in items:
+        try:
+            output.append(vocab[item])
+        except KeyError:
+            continue
+    return output
