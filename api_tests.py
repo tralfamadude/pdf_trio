@@ -37,7 +37,7 @@ else:
 # read in sample pdf one at a time and classify them
 
 def do_classify_on_pdf(pdf_file_path):
-    target_url = API_BASE_URL + "classify/research-pub/linear"
+    target_url = API_BASE_URL + "classify/research-pub/all"
     print("-----")
     print("process %s" % (pdf_file_path))
     with open(pdf_file_path, 'rb') as f:

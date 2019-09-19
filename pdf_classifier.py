@@ -228,8 +228,8 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
     label_ids = [0]  # dummy, one int, not needed for prediction
     segment_ids = np.zeros(512, dtype=int).tolist()
     evalue = {"input_ids": input_ids, "input_mask": input_mask, "label_ids": label_ids, "segment_ids": segment_ids}
-    log.debug("BERT: proposed request has: %s" % evalue)
-    req_json = json.dumps({"signature_name": "serving_default", "examples": evalue})
+    req_json = json.dumps({"signature_name": "serving_default", "examples": [ evalue ]})
+    log.debug("BERT: request to %s is: %s ..." % (bert_tf_server_url, req_json[:200]))
     try:
         response = requests.post(bert_tf_server_url, data=req_json, headers=json_content_header)
         if response.status_code == 200:
@@ -241,7 +241,10 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
                 ret = encode_confidence("research", confidence_research)
             else:
                 ret = encode_confidence("other", confidence_other)
+        elif response.status_code == 400:
+            log.warning("HTTP 400 from tf-serving of bert, %s" % response.raw)
     except Exception:
+        ret = 0.5  # zero confidence encoded
         log.warning("exception occurred processing REST BERT tensorflow-serving for %s" % trace_id)
     return ret
 
