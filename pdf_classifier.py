@@ -229,7 +229,7 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
     segment_ids = np.zeros(512, dtype=int).tolist()
     evalue = {"input_ids": input_ids, "input_mask": input_mask, "label_ids": label_ids, "segment_ids": segment_ids}
     req_json = json.dumps({"signature_name": "serving_default", "instances": [evalue]})
-    log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:120], req_json[len(req_json-80):]))
+    log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:120], req_json[len(req_json)-80:]))
     ret = 0.5  # zero confidence encoded default
     try:
         response = requests.post(bert_tf_server_url, data=req_json, headers=json_content_header)
