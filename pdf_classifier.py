@@ -227,15 +227,22 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
         input_mask = np.ones(512, dtype=int).tolist()
     label_ids = [0]  # dummy, one int, not needed for prediction
     segment_ids = np.zeros(512, dtype=int).tolist()
-    evalue = {"input_ids": input_ids, "input_mask": input_mask, "label_ids": label_ids, "segment_ids": segment_ids}
-    evalue_str = json.dumps(evalue)
-    req_json = json.dumps({"signature_name": "serving_default", "instances": [{"examples": [evalue_str]}]})
-    log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:120], req_json[len(req_json)-80:]))
+    # The released BERT graph has been tweaked to use 4 input placeholders,
+    #   so we use "inputs" columnar format REST style.
+    #   Columnar format means each named input can have a list of values, but we actually are only submitting
+    #   one at a time here.
+    #   label_ids is a scalar (placeholder shape [None]).
+    evalue = {"input_ids": [input_ids],
+              "input_mask": [input_mask],
+              "label_ids": label_ids,
+              "segment_ids": [segment_ids]}
+    req_json = json.dumps({"signature_name": "serving_default", "inputs": {"examples": evalue}})
+    log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:80], req_json[len(req_json)-50:]))
     ret = 0.5  # zero confidence encoded default
     try:
         response = requests.post(bert_tf_server_url, data=req_json, headers=json_content_header)
         if response.status_code == 200:
-            response_vec = response.json()["predictions"][0]
+            response_vec = response.json()["outputs"][0]
             confidence_other = response_vec[0]
             confidence_research = response_vec[1]
             log.debug("bert classify %s  other=%.2f research=%.2f" % (trace_id, confidence_other, confidence_research))
