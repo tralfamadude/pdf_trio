@@ -236,7 +236,7 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
               "input_mask": [input_mask],
               "label_ids": label_ids,
               "segment_ids": [segment_ids]}
-    req_json = json.dumps({"signature_name": "serving_default", "inputs": {"examples": evalue}})
+    req_json = json.dumps({"signature_name": "serving_default", "inputs":  evalue })
     log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:80], req_json[len(req_json)-50:]))
     ret = 0.5  # zero confidence encoded default
     try:
