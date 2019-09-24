@@ -1,2 +1,13 @@
 .idea/
 __pycache__/
+.*
+*.pyc
+#*#
+*~
+*.swp
+[Tt]humbs.db
+*.DS_Store
+*.log
+
+# Don't ignore this file itself
+!.gitignore
