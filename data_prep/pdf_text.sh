@@ -1,11 +1,14 @@
 #!/bin/bash
 MY_DIR=$(cd $(dirname $0); pwd)
+#  usage: [src_dir] [dest_dir]
+#   by default, uses '.' directory
 
-PDF=$1
-TARGET_DIR=$2
-[ -z "$TARGET_DIR" ] && TARGET_DIR=$(dirname $PDF)
+PDF=.
+[ ! -z "$1" ]  &&  PDF="$1"
+TARGET_DIR=.
+[ ! -z "$2" ]  &&  TARGET_DIR="$2"
 
-for j in $PDF ; do
+for j in $PDF/*.pdf ; do
   TFILE=$TARGET_DIR/$(basename $j .pdf).txt
   if [ ! -e $TFILE ] ; then 
     # need to extract text
@@ -14,7 +17,7 @@ for j in $PDF ; do
   # check file size
   if [ -e $TFILE ] ; then
     TFILE_SIZE=$(stat -c %s $TFILE)
-    # remove zero sized files since we do not want to train on that
+    # remove small sized files since we do not want to train on that
     if [ $TFILE_SIZE -lt 500 ] ; then
       #  too small
       rm $TFILE

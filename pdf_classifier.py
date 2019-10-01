@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 version_map = {
     "image": "20190708",
     "linear": "20190720",
-    "bert": "20190918",
+    "bert": "20190923T2215",
     "urlmeta": "20190722"
 }
 

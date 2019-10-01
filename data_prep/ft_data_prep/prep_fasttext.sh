@@ -4,8 +4,8 @@ FPDF=$1
 CLASS=$2
 TARGET_DIR=$3
 
-# This creates *.ft and *.txt files in Current Dir for fastText training for one input PDF (possibly in a different dir.). 
-# Existing *.ft file will be replaced. The *.ft file will not have an EOL char so more toekns can be appeneded.
+# This creates a *.ft and *.txt files in Current Dir for fastText training for one input PDF (possibly in a different dir.).
+# Existing *.ft file will be replaced. The *.ft file will not have an EOL char so more tokens can be appeneded.
 
 MY_DIR=$(cd $(dirname $0); pwd)
 
@@ -13,6 +13,7 @@ function usage() {
     echo "usage: file.pdf class [opt_target_dir]"
     echo "example: foo.pdf research"
     echo "example: foo.pdf other /someplace/"
+    echo "files are created in the opt_target_dir which defaults to cwd"
     exit 1
 }
 
@@ -36,6 +37,16 @@ if [ ! -e $TARGET_DIR/$FID.txt ]; then
     echo "${FID}:  no txt made, skipping"
     exit 0
 fi
+
+#  use pdfalto to get WIDTH and HEIGHT
+#$MY_DIR/pdf_to_xml_notext.sh  $BDIR/$FPDF $TARGET_DIR
+#XNT=$TARGET_DIR/$(basename $FPDF .pdf).xmlnt
+#if [ -e $XNT ]; then
+#  WIDTH_HEIGHT=$($XNT | tr '<'  '\n' | tr '>'  '\n'|grep 'Page1[^0-9]' | tr -d '/' | awk '{ print($4,$5) }' | tr -d '"' | tr -d '=')
+#  # example: WIDTH595.26 HEIGHT779.52
+#  #  ToDo: compute ratio, and also in api
+#fi
+
 # format file with one line for fastText
 OFILE=$TARGET_DIR/$FID.ft
 
@@ -55,4 +66,4 @@ if [ -f $TARGET_DIR/$FID.xmlnt ] ; then
 fi
 
 # add final EOL
-# keep available for appending #echo "" >>$OFILE
+echo "" >>$OFILE
