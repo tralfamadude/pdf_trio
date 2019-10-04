@@ -6,6 +6,8 @@ function usage(){
   exit 1
 }
 
+HERE=$(cd $(dirname $0); pwd)
+
 if [ $# -lt 4  -o  $# -gt 5 ]; then
     usage
 fi
@@ -17,6 +19,10 @@ RESEARCH_PDFS_DIR_2="$5"
 
 #     check args
 [ -z "$DEST_DIR" ]  &&  usage
+if [ -d $DEST_DIR/staging ]; then
+  # remove old ft files so do not have unwitting accumulation
+  rm -f $DEST_DIR/staging/*
+fi
 mkdir -p $DEST_DIR/staging
 [ ! -d "$DEST_DIR" ]  &&  echo "could not create directory: $DEST_DIR"  &&  usage
 [ -z "$OTHER_PDFS_DIR"  -o   ! -d "$OTHER_PDFS_DIR" ]  &&  echo "directory does not exist: $OTHER_PDFS_DIR"  &&  usage
@@ -41,12 +47,12 @@ RESEARCH_PDFS_DIR_1=$(cd $RESEARCH_PDFS_DIR_1; pwd)
 
 #  create *.ft files, one for each pdf, with tokens from the pdf
 cd $OTHER_PDFS_DIR
-for j in *.pdf ; do ./prep_fasttext.sh $j other $DEST_DIR/staging ; done
+for j in *.pdf ; do $HERE/prep_fasttext.sh $j other $DEST_DIR/staging ; done
 cd $RESEARCH_PDFS_DIR_1
-for j in *.pdf ; do ./prep_fasttext.sh $j research $DEST_DIR/staging ; done
+for j in *.pdf ; do $HERE/prep_fasttext.sh $j research $DEST_DIR/staging ; done
 if [ ! -z "$RESEARCH_PDFS_DIR_2" ]; then
   cd $RESEARCH_PDFS_DIR_2
-  for j in *.pdf ; do ./prep_fasttext.sh $j research $DEST_DIR/staging ; done
+  for j in *.pdf ; do $HERE/prep_fasttext.sh $j research $DEST_DIR/staging ; done
 fi
 
 #            gather .ft files together to create sample files and then train/test
