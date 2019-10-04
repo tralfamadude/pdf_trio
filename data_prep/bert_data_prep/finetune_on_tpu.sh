@@ -13,7 +13,7 @@ curl https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh >Mini
 chmod +x *.sh
 ./Miniconda3-latest-Linux-x86_64.sh
 
-# ToDo: start a new shell to get new env
+source ~/.bashrc
 # should be in (base) conda env
 
 # create tensorflow_hub env
@@ -31,7 +31,7 @@ pip install --upgrade oauth2client
 #     
 export BERT_BASE_DIR=gs://${BUCKET}/multi_cased_L-12_H-768_A-12
 
-TS=$(date '+%Y%m%dT%H')
+TS=$(date '+%Y%m%dT%H%M')
 BOUT=bert_output_$TS
 
 #                          Training
@@ -48,7 +48,7 @@ nohup python ./run_classifier.py \
 --learning_rate=2e-5 \
 --num_train_epochs=3 \
 --do_lower_case=False \
---data_dir=gs://${BUCKET}/bert_20000 \
+--data_dir=gs://${BUCKET}/$BASE \
 --output_dir=gs://${BUCKET}/$BOUT  \
 --use_tpu=true \
 --tpu_name=tpu-node-1 \

@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 """
-Process pdf TAB URL info to make training data. 
-The input is a tsv file and assumes one .ft file per sample is destination of tokens. 
+Process pdf TAB URL info to make training data.
+The input is a tsv file and assumes one .ft file per sample is destination of tokens.
 This will append tokens from the tsv file to the .ft file. 
 If the .ft file (one per doc ID) does not exist, it will be created
 so that training data on just url metadata is possible. In the append case,
 tokens from the pdf text have url metadata appended for a combined effect.
 
-FastText needs a concatenation of .ft files to make a training 
+Example tsv row:
+c487656070a636a24800776051e9d5449ebfbdea        https://core.ac.uk/download/pdf/81995083.pdf    201904150928
+
+FastText needs a concatenation of .ft files to make a training
 or testing set, to do that, add an EOL char to each .ft, concatentate all 
 the .ft files from the categories (research, other, .etc) then sort -R to randomize order, then divide up into training and validation files.
 
-Example url: https://web.archive.org/web/20180511040716/https://ekja.org/upload/pdf/kjae-57-444.pdf
+Example url with archive.org prefix: https://web.archive.org/web/20180511040716/https://ekja.org/upload/pdf/kjae-57-444.pdf
+The prefix is removed during processing.
 
 """
 import argparse
@@ -46,7 +50,6 @@ df_raw = pd.read_csv(infile, header=None, sep='\t')
 # [0] is id (checksum)
 # [1] is url, might have wayback prefix
 # [2] is timestamp (or no col at all for some cases)
-
 
 # In many cases, URL has prefix https://web.archive.org/web/20180725185648/ (where number varies)
 # which should be removed to obtain the real URL. 
@@ -106,8 +109,8 @@ def gen_tokens(tlist):
 
 
 if args.domains != '':
-    # only gather domains
-    domains_list = [ extract_domain(remove_wayback_prefix(x)) for x in df_raw[1] ]
+    # gather domains
+    domains_list = [ extract_domain(remove_wayback_prefix(x)) for x in df_raw[1]]
     domains_list = list(set(domains_list))
     with open(args.domains, 'w') as f:
         for item in domains_list:
