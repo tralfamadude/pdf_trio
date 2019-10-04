@@ -1,12 +1,17 @@
 #!/bin/bash
-#  Create JPG images of first page of a set of PDFs
-#  usage: [src_dir] [dest_dir]
-#   by default, uses '.' directory
+#  Create JPG images of first page of a set of PDFs.
+#  usage: pdf_src_dir image_dest_dir
 
-SRC_DIR=.
-[ ! -z "$1" ]  &&  SRC_DIR="$1"
-DEST_DIR=.
-[ ! -z "$1" ]  &&  DEST_DIR="$1"
+function usage(){
+  echo "Usage:  pdf_src_dir image_dest_dir"
+  exit 1
+}
+
+if [ $# -ne 2 ]; then
+    usage
+fi
+SRC_DIR="$1"
+DEST_DIR="$2"
 
 cd $SRC_DIR
 
