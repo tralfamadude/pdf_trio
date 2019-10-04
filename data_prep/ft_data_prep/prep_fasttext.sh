@@ -30,7 +30,7 @@ FPDF=$(basename $FPDF)
 # generate txt if missing
 if [ ! -e $TARGET_DIR/$FID.txt ]; then
     # obtain txt
-    $MY_DIR/pdf_text.sh $BDIR/$FPDF $TARGET_DIR
+    $MY_DIR/../pdf_text.sh $BDIR/$FPDF $TARGET_DIR
 fi
 # text output can fail (say, image only pdf), so bail if no text
 if [ ! -e $TARGET_DIR/$FID.txt ]; then
