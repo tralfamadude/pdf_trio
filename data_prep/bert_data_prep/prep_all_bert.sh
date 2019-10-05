@@ -29,6 +29,13 @@ function extract_text_from_pdfs() {
 
 #     check args
 [ -z "$DEST_DIR" ]  &&  usage
+if [ -e $DEST_DIR/$BASE ]; then
+  echo "already exists: ${DEST_DIR}/${BASE}"
+  echo "pick a new base or remove the old directory"
+  exit 2
+fi
+mkdir $DEST_DIR/$BASE
+DEST_DIR=$DEST_DIR/$BASE
 mkdir -p $DEST_DIR/staging/research
 mkdir -p $DEST_DIR/staging/other
 [ ! -d "$DEST_DIR" ]  &&  echo "could not create directory: $DEST_DIR"  &&  usage

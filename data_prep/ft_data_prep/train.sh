@@ -11,6 +11,11 @@ BASE="$1"
 DATA_DIR="$2"
 FT_PATH="$3"
 
+if [ ! -e ${DATA_DIR}/${BASE}/${BASE}.samples.train ]; then
+  echo "check your dataset_dir or basename, this file is not found: ${DATA_DIR}/${BASE}/${BASE}.samples.train"
+  exit 2
+fi
+
 #  train fastText
 $FT_PATH/fasttext supervised -input ${DATA_DIR}/${BASE}/${BASE}.samples.train -output ${DATA_DIR}/${BASE}/${BASE} -lr 1.0 -dim 50 -epoch 2
 #  check against validation set

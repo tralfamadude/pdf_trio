@@ -54,7 +54,7 @@ which text could be extracted. These staging files and directory can be deleted 
 they are useful for inspecting extracted text because the training file itself does not contain doc IDs. 
 The staging directory is emptied at the start of a run. 
 
-Speed: about 8 docs per second are processed. 
+Speed: about 6 docs are processed per second. 
 
 Then do FastText training and evaluation example:
 ```
@@ -62,6 +62,17 @@ Then do FastText training and evaluation example:
 ```
 The basename_for_dataset, dataset_dir, and path to the fastText directory are specified. Training and 
 evaluation only takes about a minute. 
+
+The result will be something like:
+```
+ls dataset_dir/ft20191001/
+ftft20191001.bin
+ftft20191001.samples
+ftft20191001.samples.train
+ftft20191001.samples.validate
+ftft20191001.vec
+```
+where the training step added the .vec and .bin files.
 
 ### Tokenizing
 Tokenization happens in  `prep_fasttext.sh`.
