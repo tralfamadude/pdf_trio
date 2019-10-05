@@ -41,15 +41,6 @@ if [ ! -e $TARGET_DIR/$FID.txt ]; then
     exit 0
 fi
 
-#  use pdfalto to get WIDTH and HEIGHT
-#$MY_DIR/pdf_to_xml_notext.sh  $BDIR/$FPDF $TARGET_DIR
-#XNT=$TARGET_DIR/$(basename $FPDF .pdf).xmlnt
-#if [ -e $XNT ]; then
-#  WIDTH_HEIGHT=$($XNT | tr '<'  '\n' | tr '>'  '\n'|grep 'Page1[^0-9]' | tr -d '/' | awk '{ print($4,$5) }' | tr -d '"' | tr -d '=')
-#  # example: WIDTH595.26 HEIGHT779.52
-#  #  ToDo: compute ratio, and also in api
-#fi
-
 # format file with one line for fastText
 OFILE=$TARGET_DIR/$FID.ft
 
@@ -61,12 +52,12 @@ if [ -e $TARGET_DIR/$FID.txt ]; then
     cat $TARGET_DIR/$FID.txt | tr '\n'  ' ' | sed -e "s|\([.\!?,'/()]\)| \1 |g" | tr "[:upper:]" "[:lower:]" |  tr  "[:cntrl:]"  ' ' | tr '[:punct:]'  ' ' | tr -s ' ' >> $OFILE
 fi 
 
-
-$MY_DIR/pdf_to_xml_notext.sh $BDIR/$FPDF $TARGET_DIR
-if [ -f $TARGET_DIR/$FID.xmlnt ] ; then
-    echo -n " " >> $OFILE
-    cat $TARGET_DIR/$FID.xmlnt | tr '<'  '\n' | tr '>'  '\n'|grep 'Page1[^0-9]' |  awk '{ print $4,$5 }' | tr -d '/' | tr -d '=' | tr -d '"' | tr '\n'  ' ' >> $OFILE
-fi
+# this needs more study (and would also need to be done in app.py)
+#$MY_DIR/pdf_to_xml_notext.sh $BDIR/$FPDF $TARGET_DIR
+#if [ -f $TARGET_DIR/$FID.xmlnt ] ; then
+#    echo -n " " >> $OFILE
+#    cat $TARGET_DIR/$FID.xmlnt | tr '<'  '\n' | tr '>'  '\n'|grep 'Page1[^0-9]' |  awk '{ print $4,$5 }' | tr -d '/' | tr -d '=' | tr -d '"' | tr '\n'  ' ' >> $OFILE
+#fi
 
 # add final EOL
 echo "" >>$OFILE
