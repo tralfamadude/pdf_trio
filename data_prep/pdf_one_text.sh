@@ -13,9 +13,10 @@ TARGET_DIR=$2
 [ -z "$TARGET_DIR" ]  &&  usage
 
 TFILE=$TARGET_DIR/$(basename $PDF .pdf).txt
+EFILE=$TARGET_DIR/$(basename $PDF .pdf).err
 if [ ! -e $TFILE ] ; then
   # need to extract text
-  pdftotext -nopgbrk  -eol unix $PDF $TFILE
+  pdftotext -nopgbrk  -eol unix $PDF $TFILE >$EFILE 2>&1
 fi
 # check file size
 if [ -e $TFILE ] ; then
