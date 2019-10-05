@@ -51,32 +51,33 @@ RESEARCH_PDFS_DIR_1=$(cd $RESEARCH_PDFS_DIR_1; pwd)
 cd $OTHER_PDFS_DIR
 for j in *.pdf ; do
   $HERE/prep_fasttext.sh $j other $DEST_DIR/staging
-  if [ -e $DEST_DIR/staging/$(basename $j .pdf).txt ]; then
-    cat $DEST_DIR/staging/$(basename $j .pdf).txt >>${DEST_DIR}/${BASE}.samples.raw
-    # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).txt
+  if [ -e $DEST_DIR/staging/$(basename $j .pdf).ft ]; then
+    cat $DEST_DIR/staging/$(basename $j .pdf).ft >>${DEST_DIR}/${BASE}.samples.raw
+    # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).ft
   fi
 done
 cd $RESEARCH_PDFS_DIR_1
 for j in *.pdf ; do
   $HERE/prep_fasttext.sh $j research $DEST_DIR/staging
-  if [ -e $DEST_DIR/staging/$(basename $j .pdf).txt ]; then
-    cat $DEST_DIR/staging/$(basename $j .pdf).txt >>${DEST_DIR}/${BASE}.samples.raw
-    # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).txt
+  if [ -e $DEST_DIR/staging/$(basename $j .pdf).ft ]; then
+    cat $DEST_DIR/staging/$(basename $j .pdf).ft >>${DEST_DIR}/${BASE}.samples.raw
+    # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).ft
   fi
 done
 if [ ! -z "$RESEARCH_PDFS_DIR_2" ]; then
   cd $RESEARCH_PDFS_DIR_2
   for j in *.pdf ; do
     $HERE/prep_fasttext.sh $j research $DEST_DIR/staging
-    if [ -e $DEST_DIR/staging/$(basename $j .pdf).txt ]; then
-      cat $DEST_DIR/staging/$(basename $j .pdf).txt >>${DEST_DIR}/${BASE}.samples.raw
-      # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).txt
+    if [ -e $DEST_DIR/staging/$(basename $j .pdf).ft ]; then
+      cat $DEST_DIR/staging/$(basename $j .pdf).ft >>${DEST_DIR}/${BASE}.samples.raw
+      # COULD: rm $DEST_DIR/staging/$(basename $j .pdf).ft
     fi
   done
 fi
 
 #            shuffle the sample file
 cat ${DEST_DIR}/${BASE}.samples.raw | sort -R >${DEST_DIR}/${BASE}.samples
+rm ${DEST_DIR}/${BASE}.samples.raw
 N=$(wc -l ${DEST_DIR}/${BASE}.samples | awk '{ print $1 }')
 
 #   break up into train/test
