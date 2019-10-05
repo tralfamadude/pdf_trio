@@ -51,7 +51,10 @@ a subdirectory (`dataset_dir/ft20191001/`) to put generated files.
 
 A sub-subdirectory called staging/ is created to hold .ft files, one for each PDF for
 which text could be extracted. These staging files and directory can be deleted after `prep_all_fasttext.sh` is run; 
-they are useful for inspecting extracted text. 
+they are useful for inspecting extracted text because the training file itself does not contain doc IDs. 
+The staging directory is emptied at the start of a run. 
+
+Speed: about 8 docs per second are processed. 
 
 Then do FastText training and evaluation example:
 ```
