@@ -8,9 +8,9 @@ function usage() {
 }
 
 PDF=$1
-[ ! -z "$PDF" ]  &&  usage
+[ -z "$PDF" ]  &&  usage
 TARGET_DIR=$2
-[ ! -z "$TARGET_DIR" ]  &&  usage
+[ -z "$TARGET_DIR" ]  &&  usage
 
 TFILE=$TARGET_DIR/$(basename $PDF .pdf).txt
 if [ ! -e $TFILE ] ; then
