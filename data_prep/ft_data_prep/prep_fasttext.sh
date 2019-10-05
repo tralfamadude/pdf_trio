@@ -1,11 +1,12 @@
 #!/bin/bash
-
+# process one .pdf file
 FPDF=$1
 CLASS=$2
 TARGET_DIR=$3
 
-# This creates a *.ft and *.txt files in Current Dir for fastText training for one input PDF (possibly in a different dir.).
+# This creates a *.ft and *.txt files in the TARGET_DIR for fastText training for one input PDF.
 # Existing *.ft file will be replaced. The *.ft file will not have an EOL char so more tokens can be appeneded.
+# If TARGET_DIR is not specified, then files will be created in the same dir as the PDF file.
 
 MY_DIR=$(cd $(dirname $0); pwd)
 
@@ -13,12 +14,14 @@ function usage() {
     echo "usage: file.pdf class [opt_target_dir]"
     echo "example: foo.pdf research"
     echo "example: foo.pdf other /someplace/"
-    echo "files are created in the opt_target_dir which defaults to cwd"
+    echo "files are created in the opt_target_dir which defaults to pdf dir"
     exit 1
 }
 
 [ -z "$FPDF" ]  &&  usage
 [ -z "$CLASS" ]  &&  usage
+
+[ ! -e "$FPDF" ]  &&  echo "${0}: does not exist: $FPDF"
 
 FID=$(basename $FPDF .pdf)
 BDIR=$(cd $(dirname $FPDF); pwd)
