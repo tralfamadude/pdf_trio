@@ -15,7 +15,7 @@ TARGET_DIR=$2
 TFILE=$TARGET_DIR/$(basename $PDF .pdf).txt
 if [ ! -e $TFILE ] ; then
   # need to extract text
-  pdftotext -nopgbrk  -eol unix $j $TFILE
+  pdftotext -nopgbrk  -eol unix $PDF $TFILE
 fi
 # check file size
 if [ -e $TFILE ] ; then
