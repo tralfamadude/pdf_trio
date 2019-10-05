@@ -21,7 +21,7 @@ function usage() {
 [ -z "$FPDF" ]  &&  usage
 [ -z "$CLASS" ]  &&  usage
 
-[ ! -e "$FPDF" ]  &&  echo "${0}: does not exist: $FPDF"
+[ ! -e "$FPDF" ]  &&  echo "${0}: does not exist: $FPDF"  &&  exit 3
 
 FID=$(basename $FPDF .pdf)
 BDIR=$(cd $(dirname $FPDF); pwd)
