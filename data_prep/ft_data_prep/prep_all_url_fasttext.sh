@@ -38,10 +38,10 @@ DEST_DIR=$(cd $DEST_DIR; pwd)
 
 #  create *.ft files, one for each row in the tsv files
 ./preprocess_tsv.py --category research --input $INPUT_TSV_RESEARCH --working  $DEST_DIR/staging
-./preprocess_tsv.py --category other --input INPUT_TSV_OTHER --working  $DEST_DIR/staging
+./preprocess_tsv.py --category other --input $INPUT_TSV_OTHER --working  $DEST_DIR/staging
 
 #            gather .ft files together to create sample files and then train/test
-cat ${DEST_DIR}/staging/*ft | sort -R >${DEST_DIR}/${BASE}.samples
+( cd ${DEST_DIR}/staging; cat *ft | sort -R >${DEST_DIR}/${BASE}.samples )
 N=$(wc -l ${DEST_DIR}/${BASE}.samples | awk '{ print $1 }')
 echo "All ${N} data samples: ${DEST_DIR}/${BASE}.samples"
 
