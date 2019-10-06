@@ -16,6 +16,12 @@ INPUT_TSV_RESEARCH="$4"
 
 #     check args
 [ -z "$DEST_DIR" ]  &&  usage
+DEST_DIR=$DEST_DIR/$BASE
+if [ -e $DEST_DIR ]; then
+  echo "already exists: ${DEST_DIR}"
+  echo "pick a new base or remove the old directory"
+  exit 2
+fi
 mkdir -p $DEST_DIR/staging
 [ ! -d "$DEST_DIR" ]  &&  echo "could not create directory: $DEST_DIR"  &&  usage
 [ -z "$INPUT_TSV_OTHER"  -o   ! -f "$INPUT_TSV_OTHER" ]  &&  echo "tsv input file does not exist: $INPUT_TSV_OTHER"  &&  usage
