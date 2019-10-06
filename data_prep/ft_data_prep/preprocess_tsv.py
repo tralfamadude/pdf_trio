@@ -26,7 +26,7 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 parser.add_argument("--category", type=str, default='', help="specify classification", required=True)
 parser.add_argument("--input", type=str, default='', help="tsv file to process", required=True)
-parser.add_argument("--working", type=str, default='', help="data dir for appending to out.ft file", required=True)
+parser.add_argument("--working", type=str, default='', help="data dir for appending to category.ft file", required=True)
 parser.add_argument("--domains", type=str, default='', help="optionally extract domains from tsv and store in given file")
 parser.add_argument("--testing", default=False, help="testing mode, be verbose, only a few cycles", action="store_true")
 
@@ -119,7 +119,7 @@ if args.domains != '':
 #  append to {id}.ft file if it exists, otherwise create the file
 #
 kount = 0
-afile = working_dir + "/out.ft"
+afile = working_dir + "/" + target_category + ".ft"
 with open(afile, 'w') as f:
     for index, row in df_raw.iterrows():
         kount += 1
