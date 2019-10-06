@@ -26,10 +26,9 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 parser.add_argument("--category", type=str, default='', help="specify classification", required=True)
 parser.add_argument("--input", type=str, default='', help="tsv file to process", required=True)
-parser.add_argument("--working", type=str, default='', help="data dir for appending to .ft files", required=True)
+parser.add_argument("--working", type=str, default='', help="data dir for appending to out.ft file", required=True)
 parser.add_argument("--domains", type=str, default='', help="optionally extract domains from tsv and store in given file")
 parser.add_argument("--testing", default=False, help="testing mode, be verbose, only a few cycles", action="store_true")
-parser.add_argument("--append_only", default=False, help="only append to existing .ft files", action="store_true")
 
 # read arguments from the command line
 args = parser.parse_args()
@@ -42,7 +41,6 @@ print(" target_category=" + target_category)
 print(" infile=" + infile)
 print(" working_dir=" + working_dir)
 print(" domains=" + args.domains)
-print(" append_only=" + str(args.append_only))
 
 # tsv file has:  ID URL [TS]
 # no header
@@ -121,25 +119,15 @@ if args.domains != '':
 #  append to {id}.ft file if it exists, otherwise create the file
 #
 kount = 0
-for index, row in df_raw.iterrows(): 
-    kount += 1
-    if args.testing and kount > 5: 
-        print("Stopping early due to --testing flag")
-        break;
-    id = str(row[0])
-    url = str(row[1])
-    # append to the file named id + ".ft" without adding \n 
-    afile = working_dir + "/" + id + ".ft"
-    tokens_string = gen_tokens(extract_tokens(remove_wayback_prefix(url)))
-    if args.testing:
-        print("testing: url={} afile={} tokens={}".format(url, afile, tokens_string))
-    if os.path.isfile(afile):
-        # append to existing 
-        with open(afile, 'a') as f:
-            f.write("%s" % tokens_string)
-    else:
-        # write new file
-        if args.append_only:
-            continue
-        with open(afile, 'w') as f:
-            f.write("%s %s" % (("__label__"+target_category), tokens_string))
+afile = working_dir + "/out.ft"
+with open(afile, 'w') as f:
+    for index, row in df_raw.iterrows():
+        kount += 1
+        if args.testing and kount > 5:
+            print("Stopping early due to --testing flag")
+            break
+        url = str(row[1])
+        tokens_string = gen_tokens(extract_tokens(remove_wayback_prefix(url)))
+        if args.testing:
+            print("testing: url={} afile={} tokens={}".format(url, afile, tokens_string))
+        f.write("%s %s\n" % (("__label__"+target_category), tokens_string))
