@@ -73,7 +73,7 @@ pip install --upgrade oauth2client
 The run_classifier.py module of BERT is used to train/fine-tune and test/validate the model. 
 
 Use this particular BERT repo because it has been modified to produce a SavedModel which works with 
-a REST api of tensorflow serving, and the REST request matches usage in app.py in top level directory:
+a REST api of tensorflow serving; the REST definition matches usage in app.py in top level directory:
 ```
 git clone https://github.com/tralfamadude/bert.git
 
