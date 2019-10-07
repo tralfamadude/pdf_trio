@@ -3,7 +3,7 @@ BUCKET=$1
 
 # NOTE: this is not completely ready to run since values will be different for a different account, or when
 #  a different pre-trained model is used, or timestamp-based files are used in the cloud storage.
-# Best approach is to use this as a guide.
+# Best approach is to use this script as a guide.
 
 # Tested on ubuntu16 on gcp using v2-8 TPU (named tpu-node-1)
 
@@ -19,6 +19,7 @@ source ~/.bashrc
 # create tensorflow_hub env
 conda create --name tf_hub python=3.7 scipy  tensorflow=1.14.0 tensorboard=1.14.0 numpy  tensorflow-hub -c conda-forge
 
+eval "$(conda shell.bash hook)"
 conda activate tf_hub
 
 pip install --upgrade google-api-python-client
