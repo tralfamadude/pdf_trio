@@ -2,22 +2,30 @@
 
 ##          Purpose
 This repo defines a Machine Learning (ML) ensemble of classifiers to predict whether a PDF doc is a 
-"research publication". It also includes a URL based classifier for quick assessment, based solely on. A REST service
-takes PDF contents and returns a JSON for the classification result. 
+"research publication". It also includes a URL based classifier for quick assessment, based solely on the URL. 
+A REST service takes PDF contents and returns a JSON for the classification result. 
 
 The purpose of this project is to identify research works for richer cataloging in production 
 at [Internet Archive](https://archive.org). Research 
 works are not always found in well-curated locations with good metadata that can be utilized 
-to enrich indexing and search. Ongoing work at the Internet Archive will use this classifier ensemble
-to curate "long tail" research articles in multiple languages. 
+to enrich indexing and search. [Ongoing work](https://blog.dshr.org/2015/04/preserving-long-form-digital-humanities.html) 
+at the Internet Archive will use this classifier ensemble
+to curate "long tail" research articles in multiple languages published by small publishers. 
+[Low volume publishing](https://blog.dshr.org/2017/01/the-long-tail-of-non-english-science.html) is 
+inversely correlated to longevity, so the goal is to preserve the research
+works from these sites to ensure they are not lost.  
 
-The performance target is to classify a PDF in about 1 second on average and this 
+The performance target is to classify a PDF in about 1 second or less on average and this 
 implementation achieves that goal when multiple, parallel requests are made on a 
-multi-core machine. 
+multi-core machine without a GPU. 
 
 The URL classifier is best used as a "true vs. unknown" choice, that is, if the classification is 
-non-research ('other'), then find out more. Our motivation is to have a quick check that can be used
-during crawling. The training should be biased toward 
+non-research ('other'), then find out more, do not assume it is not a research work. 
+Our motivation is to have a quick check that can be used
+during crawling. A high confidence is used to avoid false positives. 
+
+##          Re-Purposing
+This PDF classifier can be re-purposed for other binary cases simply by using different training data.  
 
 ##           Implementation Overview
 
@@ -25,9 +33,9 @@ during crawling. The training should be biased toward
 * Deep Learning neural networks 
   * Run with tensorflow serving for high throughput
   * [CNN for image classification](data_prep/README.md)
-  * BERT for text classification using a multilingual model
+  * [BERT](bert_data_prep/README.md) for text classification using a multilingual model
 * FastText linear classifier
-  * Full text 'bag of words' classification
+  * Full text 'bag of words' classification for high-throughput
   * URL-based classification
 * PDF training data preparation scripts (./data_prep)
 
@@ -45,6 +53,7 @@ We decided to avoid using OCR for text extraction for speed reasons and because 
 
 We address these challenges with an ensemble of classifiers that use confidence values
 to cover all the cases. There are still some edge cases, but incidence rate is at most a few percent.
+
 
 ---
 

@@ -5,11 +5,12 @@ There are two parts to obtaining a BERT model for classification: Preparing the 
 training/fine-tuning a pre-trained, multilingual BERT. 
 
 The training dataset is created by extracting text from PDFs and forming 512 tokens per document in each
-row of a TSV file required by `run_classifier.py`. A modified BERT is used to create a SavedModel for 
-fast serving via tensorflow serving (only `run_classifier.py` was modified). 
+row of a TSV file required by `run_classifier.py`. A [modified BERT](https://github.com/tralfamadude/bert)
+ is used to create a SavedModel for fast serving via tensorflow serving 
+ (only `run_classifier.py` was modified). 
 
-The training/fine-tuning is best done on Google Cloud using TPUs for quick performance (15min for 20k samples), but can also
-be done using just CPU (30hr  using 48GB RAM x 30 cores x 2GHz clock). 
+The training/fine-tuning is best done on Google Cloud using TPUs for quick performance (15min for 20k 
+samples), but can also be done using just CPU (30hr using 48GB RAM x 30 cores x 2GHz clock). 
 
 ##                  Prepare BERT Training Dataset
 Use `gen_bert_data.py` to prepare training data for BERT by ingesting .pdf files, producing 
@@ -35,7 +36,8 @@ been to analyze misclassified docs by viewing them, and if they are labeled 'oth
 'research', they are added to the kill list. This makes it possible to decouple the exceptions from 
 the gathering of random PDFs for 'other'. 
 
-For internal provenance reasons, an optional, additional research PDF directory is supported.  
+For internal provenance reasons, an optional, additional research PDF directory is supported on the 
+command line.  
 
 ##                       Train (Fine-Tune) BERT
 We are using run_classifier.py from BERT to train (fine-tune, actually) the classifier. 

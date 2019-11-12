@@ -1,7 +1,8 @@
 # Image Classifier Fine-Tuning
 
 Thumbnail images of the first page of the PDFs are used to fine-tune a pre-trained model. The Inception model 
-has the highest accuracy. The images are generated from PDFs using ImageMagick (which uses ghostscript underneath) and
+has the highest accuracy. The images are generated from PDFs using ImageMagick 
+(which uses ghostscript underneath) and
 are sized to 224x224. During fine-tuning and at inference time, the image is resize to 299x299 which 
 is what Inception uses. Since PDFs are not square, the images are created with white background padding. 
 
