@@ -80,11 +80,12 @@ The following env vars must be defined to run this API service:
 These directions assume you are running in an Ubuntu Xenial (16.04 LTS) virtual machine.
 
 ```
+sudo apt-get install g++
 sudo apt-get install -y poppler-utils imagemagick libmagickcore-6.q16-2-extra ghostscript netpbm gsfonts-other
 conda create --name pdf_trio python=3.7 --file requirements.txt
 conda activate pdf_trio
 ```
-edit /etc/ImageMagick/policy.xml to change: 
+edit /etc/ImageMagick/policy.xml (or /etc/ImageMagick-6/policy.xml) to change: 
 ```
 <policy domain="coder" rights="none" pattern="PDF" />
 ```
@@ -109,7 +110,7 @@ fetch the files and directory structure (necessary for tensorflow-serving).
 You can use curl and carefully recreate the directory structure, of course. The full set of models
 is 1.6GB.
 
-If you use the internetarchive package, here is how to download:
+If you use the internetarchive package, here is how to download using python:
 ```
 from internetarchive import download
 download('pdf_trio_models', verbose=True)
