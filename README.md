@@ -81,8 +81,8 @@ These directions assume you are running in an Ubuntu Xenial (16.04 LTS) virtual 
 
 ```
 sudo apt-get install -y poppler-utils imagemagick libmagickcore-6.q16-2-extra ghostscript netpbm gsfonts-other
-conda create --name research-pub python=3.7 --file requirements.txt
-conda activate research-pub
+conda create --name pdf_trio python=3.7 --file requirements.txt
+conda activate pdf_trio
 ```
 edit /etc/ImageMagick/policy.xml to change: 
 ```

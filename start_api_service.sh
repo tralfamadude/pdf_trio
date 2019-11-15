@@ -1,6 +1,6 @@
 #!/bin/bash
 eval "$(conda shell.bash hook)"
-conda activate research-pub
+conda activate pdf_trio
 
 export FT_MODEL=../fastText/dataset20000.bin
 export FT_URL_MODEL=../fastText/url_test_20000.bin
