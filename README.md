@@ -38,12 +38,12 @@ This PDF classifier can be re-purposed for other binary cases simply by using di
 * REST API based on python Flask
 * Deep Learning neural networks 
   * Run with tensorflow serving for high throughput
-  * [CNN for image classification](data_prep/README.md)
-  * [BERT](bert_data_prep/README.md) for text classification using a multilingual model
+  * CNN for image classification
+  * BERT for text classification using a multilingual model
 * FastText linear classifier
   * Full text 'bag of words' classification for high-throughput
   * URL-based classification
-* PDF training data preparation scripts (./data_prep)
+* PDF training data [preparation scripts](data_prep/README.md) for each kind of sub-classifier
 
 Two other repos are relied upon and not copied into this repo because they are useful standalone. This repo 
 can be considered the 'roll up' that integrates the ensemble.  
