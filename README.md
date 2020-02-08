@@ -30,6 +30,9 @@ non-research ('other'), then find out more, do not assume it is not a research w
 Our motivation is to have a quick check that can be used
 during crawling. A high confidence is used to avoid false positives. 
 
+##          License
+Apache-2.0
+
 ##          Re-Purposing
 This PDF classifier can be re-purposed for other binary cases simply by using different training data.  
 
