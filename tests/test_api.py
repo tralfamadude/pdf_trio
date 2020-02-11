@@ -20,12 +20,12 @@ Basic tests for the API using defined sample data and whatever trained models ar
 This serves as a canonical examples for how to make requests.
 """
 
-import json
-import requests
 import os
-import json
 from os import listdir
 from os.path import isfile, join
+import json
+
+import requests
 
 API_BASE_URL = "http://localhost:3939/"
 
@@ -74,12 +74,16 @@ def collect_files(dir_path):
     return ret_list
 
 
-#  ./quick_test_samples/other and ./quick_test_samples/research/
-negative_samples = collect_files("quick_test_samples/other")
-print(negative_samples)
-positive_samples = collect_files("quick_test_samples/research")
-print(positive_samples)
-for fname in negative_samples:
-    do_classify_on_pdf(fname)
-for fname in positive_samples:
-    do_classify_on_pdf(fname)
+def test_all():
+    #  ./tests/files/other and ./tests/files/research/
+    negative_samples = collect_files("tests/files/other")
+    print(negative_samples)
+    positive_samples = collect_files("tests/files/research")
+    print(positive_samples)
+    for fname in negative_samples:
+        do_classify_on_pdf(fname)
+    for fname in positive_samples:
+        do_classify_on_pdf(fname)
+
+if __name__ == "__main__":
+    test_all()
