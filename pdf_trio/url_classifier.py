@@ -19,8 +19,6 @@ Classify whether a pdf is a research work based only on it's URL.
 """
 
 import os
-import glob
-import re
 import logging
 
 import fasttext
@@ -38,12 +36,12 @@ fasttext_url_model = fasttext.load_model(FT_URL_MODEL)
 # In many cases, URL has prefix https://web.archive.org/web/20180725185648/ (where number varies)
 # which should be removed to obtain the real URL.
 
-wayback_prefix = "https://web.archive.org/web/"
+WAYBACK_PREFIX = "https://web.archive.org/web/"
 
 # remove wayback prefix and timestamp, if present
 def remove_wayback_prefix(url):
-    if url.startswith(wayback_prefix):
-        url_no_prefix = url[len(wayback_prefix):]
+    if url.startswith(WAYBACK_PREFIX):
+        url_no_prefix = url[len(WAYBACK_PREFIX):]
         return url_no_prefix[url_no_prefix.find("/")+1:]
     return url
 
@@ -76,7 +74,7 @@ def extract_uri(url):
         url_no_domain = url_no_domain[offset_slash+1:]
     uri_no_file = url_no_domain[:url_no_domain.rfind('/')]
     offset_q = uri_no_file.find("?")
-    if offset_q >= 0 :
+    if offset_q >= 0:
         return uri_no_file[:offset_q]
     return uri_no_file
 

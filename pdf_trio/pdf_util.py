@@ -31,8 +31,8 @@ import logging
 log = logging.getLogger(__name__)
 
 """
-PDF processing. 
-We use pdftotext (exec'ed) because it works more often than PyPDF2. 
+PDF processing.
+We use pdftotext (exec'ed) because it works more often than PyPDF2.
 Images from PDFs are created by ImageMagick (and ghostscript).
 """
 
@@ -46,7 +46,7 @@ if not shutil.which('convert'):
 
 TEMP = os.environ.get('TEMP')
 if TEMP is None:
-    TEMP="/tmp"
+    TEMP = "/tmp"
 
 start_datetime = datetime.datetime.now()
 start_timestamp = start_datetime.isoformat().split('.')[0]
@@ -96,7 +96,7 @@ def extract_pdf_text_prev(pdf_tmp_file):
     t0 = time.time()
     while time.time() - t0 < 5:  # 5 sec max, typical is less than 300msec
         ret = pp.poll()
-        if not (ret is None):
+        if ret is not None:
             break  # process terminated
         time.sleep(0.05)
     ret = pp.poll()
@@ -150,9 +150,10 @@ def extract_pdf_image_prev(pdf_tmp_file, page=0):
     pageSpec = "[" + str(page) + "]"
     # start subprocess
     # ToDo: use pipes instead so that stderr can be collected (and not just mixed into main process stderr)
-    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
-             '-quality', '95', '-thumbnail', '156x', '-gravity', 'north', '-extent', '224x224',
-             jpg_name]
+    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white',
+                   '-alpha', 'remove', '-equalize', '-quality', '95',
+                   '-thumbnail', '156x', '-gravity', 'north', '-extent',
+                   '224x224', jpg_name]
     if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
         log.debug("ImageMagick Command=" + " ".join(convert_cmd))
     pp = Popen(convert_cmd)
@@ -174,12 +175,12 @@ def extract_pdf_image_prev(pdf_tmp_file, page=0):
             log.debug("jpg too small for %s, so assumed to be a blank page; removing" % (pdf_tmp_file))
             remove_tmp_file(jpg_name)
             return ""
-        else:
-            # jpg file exists, sufficient size
-            return jpg_name
-    else:
-        # no jpg file was produced
-        return ""
+
+        # jpg file exists, sufficient size
+        return jpg_name
+
+    # no jpg file was produced
+    return ""
 
 
 def extract_pdf_image(pdf_tmp_file, page=0):
@@ -197,9 +198,10 @@ def extract_pdf_image(pdf_tmp_file, page=0):
     # Use pipes so that stderr can be collected (and not just mixed into main process stderr, hiding other errors)
 
     # the parameters here must match training to maximize accuracy
-    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white', '-alpha', 'remove', '-equalize',
-             '-quality', '95', '-thumbnail', '156x', '-gravity', 'north', '-extent', '224x224',
-             jpg_name]
+    convert_cmd = ['convert', pdf_tmp_file + pageSpec, '-background', 'white',
+                   '-alpha', 'remove', '-equalize', '-quality', '95',
+                   '-thumbnail', '156x', '-gravity', 'north', '-extent',
+                   '224x224', jpg_name]
     if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
         log.debug("ImageMagick Command=" + " ".join(convert_cmd))
     t0 = time.time()

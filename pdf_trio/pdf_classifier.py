@@ -29,7 +29,6 @@ import subprocess
 import cv2  # pip install opencv-python  to get this
 import numpy as np
 import requests
-from werkzeug import FileStorage
 import fasttext
 from fasttext import load_model
 
@@ -40,7 +39,7 @@ from . import pdf_util
 
 log = logging.getLogger(__name__)
 
-version_map = {
+VERSION_MAP = {
     "image": "20190708",
     "linear": "20190720",
     "bert": "20190923T2215",
@@ -95,7 +94,7 @@ def classify_pdf_multi(modes, pdf_filestorage):
     :param pdf_filestorage: as FileStorage object (contains a stream).
     :return: map
     """
-    results = {"version": version_map}
+    results = {"version": VERSION_MAP}
     confidence_values = []
     mode_list = modes.split(",")
     pdf_token_list = []
@@ -197,9 +196,8 @@ def encode_confidence(label, confidence):
     if confidence < 0.0:
         confidence = 0.0
     if label == '__label__research' or label == 'research':
-        return ((confidence / 2) + 0.5)
-    else:
-        return (0.5 - (confidence / 2))
+        return (confidence / 2) + 0.5
+    return 0.5 - (confidence / 2)
 
 
 def decode_confidence(e):
@@ -210,8 +208,7 @@ def decode_confidence(e):
     """
     if e < 0.5:
         return "other", 1.0 - (2 * e)
-    else:
-        return "research", (2 * e) - 1.0
+    return "research", (2 * e) - 1.0
 
 
 def classify_pdf_linear(pdf_token_list):
@@ -246,7 +243,7 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
     # for REST request, need examples=[{"input_ids": [], "input_mask":[], "label_ids":[0], "segment_ids":[]}]
     input_ids = token_ids
     if tcount < 512:
-        input_mask = np.concatenate((np.ones(tcount, dtype=int),  np.zeros(512-tcount, dtype=int)), axis=0).tolist()
+        input_mask = np.concatenate((np.ones(tcount, dtype=int), np.zeros(512-tcount, dtype=int)), axis=0).tolist()
     else:
         input_mask = np.ones(512, dtype=int).tolist()
     label_ids = [0]  # dummy, one int, not needed for prediction
@@ -260,7 +257,7 @@ def classify_pdf_bert(pdf_token_list, trace_id=""):
               "input_mask": [input_mask],
               "label_ids": label_ids,
               "segment_ids": [segment_ids]}
-    req_json = json.dumps({"signature_name": "serving_default", "inputs":  evalue })
+    req_json = json.dumps({"signature_name": "serving_default", "inputs":  evalue})
     log.debug("BERT: request to %s is: %s ... %s" % (bert_tf_server_url, req_json[:80], req_json[len(req_json)-50:]))
     ret = 0.5  # zero confidence encoded default
     try:
@@ -301,7 +298,7 @@ def classify_pdf_image_via_exec(jpg_file):
              "CONDA_SHLVL":"2"
              }
     w_dir = "../tf_hub_image_classifier"
-    cmd = [ w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
+    cmd = [w_dir+'/infer_image_new.py', '--image='+jpg_file, '--graph='+w_dir+'/retrained_graph.pb',
             '--labels='+w_dir+'/out/retrained_labels.txt', '--input_layer=Placeholder', '--output_layer=final_result']
     mycwd = "."
     t0 = time.time()
@@ -366,9 +363,9 @@ def classify_pdf_image(jpg_file):
     return ret
 
 
-if __name__ == '__main__':
+def main():
     """
-    Apply the preprocessing to generate 
+    Apply the preprocessing to generate
     """
     #  ToDo: process PDF files using all classifiers and create various confusion matrices to see where
     #     models agree/disagree. Data comes from directories associated with a defined category.
@@ -391,4 +388,7 @@ if __name__ == '__main__':
     # read arguments from the command line
     args = parser.parse_args()
 
+    # TODO: doesn't actually call anything
 
+if __name__ == '__main__':
+    main()
