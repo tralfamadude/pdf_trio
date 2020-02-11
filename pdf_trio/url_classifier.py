@@ -18,13 +18,15 @@ limitations under the License.
 Classify whether a pdf is a research work based only on it's URL.
 """
 
-import fasttext
-from fasttext import load_model
 import os
 import glob
 import re
 import logging
-import pdf_classifier
+
+import fasttext
+from fasttext import load_model
+
+from . import pdf_classifier
 
 log = logging.getLogger(__name__)
 

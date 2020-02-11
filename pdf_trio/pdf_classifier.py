@@ -19,20 +19,22 @@ limitations under the License.
 Inference drivers for CNN, FastText, and BERT for PDF classification here.
 """
 
-import fasttext
-from fasttext import load_model
 import os
 import time
-import argparse
-import text_prep
-import pdf_util
-import subprocess
+import json
 import logging
+import argparse
+import subprocess
+
 import cv2  # pip install opencv-python  to get this
 import numpy as np
-import json
 import requests
 from werkzeug import FileStorage
+import fasttext
+from fasttext import load_model
+
+from . import text_prep
+from . import pdf_util
 
 
 
