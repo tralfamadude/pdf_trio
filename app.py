@@ -19,13 +19,16 @@ limitations under the License.
 This is the Flask API definition.
 """
 
-from flask import Flask
-from flask import request, jsonify, abort
-import html
-import pdf_classifier
-import url_classifier
 import logging
 import time
+
+from flask import Flask
+from flask import request, jsonify, abort
+
+import html
+from pdf_trio import pdf_classifier
+from pdf_trio import url_classifier
+
 
 app = Flask(__name__)
 
