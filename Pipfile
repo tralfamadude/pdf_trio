@@ -1,0 +1,33 @@
+# This file is *not* used as part of bundling or distributing the python client
+# library (fatcat-openapi-client). It *is* shared by the web interface (flask app),
+# workers, and import scripts.
+
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+pytest = "*"
+pytest-pylint = "*"
+pytest-cov = "*"
+pylint = "*"
+pytest-mock = "*"
+responses = "*"
+
+[packages]
+# API/HTTP
+Flask = ">=1.1"
+raven = {extras = ['flask'],version = "*"}
+requests = ">=2"
+Werkzeug = "<1.0.0"
+python-dotenv = "*"
+
+# ML/backend things
+bert-serving-client = ">=1.9"
+fasttext = ">=0.9"
+numpy = ">=1"
+opencv-python-headless = ">=4"
+
+[requires]
+python_version = "3.7"
