@@ -10,8 +10,8 @@ is what Inception uses. Since PDFs are not square, the images are created with w
 
 Clone the tf_image_classifier companion repo, and set up the python env:
 ```
-git clone git@git.archive.org:Baclace/tf_image_classifier.git
-cd tf_image_classifier
+git clone https://github.com/tralfamadude/pdf_image_classifier
+cd pdf_image_classifier
 
 conda create --name tf_hub python=3.7 
 conda activate tf_hub

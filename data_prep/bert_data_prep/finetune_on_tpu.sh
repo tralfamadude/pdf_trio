@@ -1,9 +1,9 @@
 #!/bin/bash
 BUCKET=$1
 
-# NOTE: this is not completely ready to run since values will be different for a different account, or when
+# NOTE: this is not ready to run since values will be different for a different account, or when
 #  a different pre-trained model is used, or timestamp-based files are used in the cloud storage.
-# Best approach is to use this script as a guide.
+# This file is raw material for the README.md
 
 # Tested on ubuntu16 on gcp using v2-8 TPU (named tpu-node-1)
 
@@ -81,7 +81,7 @@ python ./run_classifier.py \
 --num_tpu_cores=8 \
 --output_dir=gs://${BUCKET}/${BOUT}   2>&1 | tee measure.out
 
-#  Back in research-pub/bert_finetune/ (not in google cloud)
+#
 # measure withheld samples:
 gsutil cp gs://${BUCKET}/${BOUT}/test_results.tsv .
 gsutil cp gs://${BUCKET}/bert_20000/test_original.tsv .

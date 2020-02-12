@@ -1,9 +1,15 @@
-#                  research-pub Classifier
+#                  PDF Trio, a Classifier Ensemble
 
-##          Purpose
+##          Highlights
+Up to 98% accuracy is achieved in classifying PDF files using BERT, Inception V3, and FastText. 
+A REST API service is defined for production use. 
+
+##          Introduction
 This repo defines a Machine Learning (ML) ensemble of classifiers to predict whether a PDF doc is a 
-"research publication". It also includes a URL based classifier for quick assessment, based solely on the URL. 
-A REST service takes PDF contents and returns a JSON for the classification result. 
+"research publication". It also includes a URL based classifier for quick assessment, based solely on 
+the URL. 
+A REST service takes PDF contents and returns a JSON of the classification result. 
+With a different training set, a different kind of classifier can be created. 
 
 The purpose of this project is to identify research works for richer cataloging in production 
 at [Internet Archive](https://archive.org). Research 
@@ -24,6 +30,9 @@ non-research ('other'), then find out more, do not assume it is not a research w
 Our motivation is to have a quick check that can be used
 during crawling. A high confidence is used to avoid false positives. 
 
+##          License
+Apache-2.0
+
 ##          Re-Purposing
 This PDF classifier can be re-purposed for other binary cases simply by using different training data.  
 
@@ -32,12 +41,12 @@ This PDF classifier can be re-purposed for other binary cases simply by using di
 * REST API based on python Flask
 * Deep Learning neural networks 
   * Run with tensorflow serving for high throughput
-  * [CNN for image classification](data_prep/README.md)
-  * [BERT](bert_data_prep/README.md) for text classification using a multilingual model
+  * CNN for image classification
+  * BERT for text classification using a multilingual model
 * FastText linear classifier
   * Full text 'bag of words' classification for high-throughput
   * URL-based classification
-* PDF training data preparation scripts (./data_prep)
+* PDF training data [preparation scripts](data_prep/README.md) for each kind of sub-classifier
 
 Two other repos are relied upon and not copied into this repo because they are useful standalone. This repo 
 can be considered the 'roll up' that integrates the ensemble.  
@@ -74,11 +83,12 @@ The following env vars must be defined to run this API service:
 These directions assume you are running in an Ubuntu Xenial (16.04 LTS) virtual machine.
 
 ```
+sudo apt-get install g++
 sudo apt-get install -y poppler-utils imagemagick libmagickcore-6.q16-2-extra ghostscript netpbm gsfonts-other
-conda create --name research-pub python=3.7 --file requirements.txt
-conda activate research-pub
+conda create --name pdf_trio python=3.7 --file requirements.txt
+conda activate pdf_trio
 ```
-edit /etc/ImageMagick/policy.xml to change: 
+edit /etc/ImageMagick/policy.xml (or /etc/ImageMagick-6/policy.xml) to change: 
 ```
 <policy domain="coder" rights="none" pattern="PDF" />
 ```
@@ -96,15 +106,26 @@ These are covered in detail under [data_prep](data_prep/README.md):
 - tf_image_classifier repo
 
 ### Models
+Sample models for research-pub classification are available at Internet Archive under 
+https://archive.org/download/pdf_trio_models.  
+A handy python [package](https://archive.org/services/docs/api/internetarchive/quickstart.html#downloading) will 
+fetch the files and directory structure (necessary for tensorflow-serving).
+You can use curl and carefully recreate the directory structure, of course. The full set of models
+is 1.6GB.
 
-You need to find/create/download, and specify the following model files or directories:
+If you use the internetarchive package, here is how to download using python:
+```
+from internetarchive import download
+download('pdf_trio_models', verbose=True)
+```
+Here is a summary of the model files, directories, and env vars to specify the paths:
 
-| env var | size | example | Used By |
+| env var | size | path | Used By |
 | ------- | ---- | ------- | ------- |
-| BERT_MODEL_PATH | 1.3GB | /srv/bert_finetuned_20190923T2215 | start_bert_serving.sh |
-| IMAGE_MODEL_PATH | 87MB | /srv/image_model_0190803 | start_image_classifier_serving.sh |
-| FT_MODEL          | 600MB | /srv/ft201909090101/ft201909090101.bin | start_api_service.sh |
-| FT_URL_MODEL      | 202MB | /srv/u201909090101/u201909090101.bin | start_api_service.sh |
+| BERT_MODEL_PATH | 1.3GB | pdf_trio_models/bert_models | start_bert_serving.sh |
+| IMAGE_MODEL_PATH | 87MB | pdf_trio_models/pdf_image_classifier_model | start_image_classifier_serving.sh |
+| FT_MODEL          | 600MB | pdf_trio_models/fastText_models/dataset20000_20190818.bin | start_api_service.sh |
+| FT_URL_MODEL      | 202MB | pdf_trio_models/fastText_models/url_dataset20000_20190817.bin | start_api_service.sh |
 
 
 See [Data Prep](data_prep/README.md) for details on preparing training data and how to train each classifier.

@@ -28,7 +28,7 @@ The regularization used for natural image training is not used because PDFs are 
 
 It was found empirically that a jpg size of 3000 or 
 smaller is always blank. It would especially detrimental to have both positive and negatives examples that 
-were blank. 
+were blank, so these are removed. 
 
 ### Extract Text from PDFs
 Running this will extract text from each .pdf to make the same basename plus .txt. 
