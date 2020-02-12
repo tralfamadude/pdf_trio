@@ -26,7 +26,7 @@ import logging
 import argparse
 import subprocess
 
-import cv2  # pip install opencv-python  to get this
+from cv2 import cv2  # pip install opencv-python  to get this
 import numpy as np
 import requests
 import fasttext
