@@ -1,13 +1,31 @@
 
+import sys
 import html
+import raven
+from raven.contrib.flask import Sentry
 from flask import Flask
 
 
 def create_app(test_config=None):
     app = Flask(__name__)
+
+    try:
+        GIT_RELEASE = raven.fetch_git_sha('.')
+    except Exception as e:
+        print("WARNING: couldn't set sentry git release automatically: " + str(e),
+            file=sys.stderr)
+        GIT_RELEASE = None
+
     app.config.from_mapping(
         SECRET_KEY='dev',
+        SENTRY_CONFIG = {
+            'enable-threads': True, # for uWSGI
+            'release': GIT_RELEASE,
+        },
     )
+
+    # Grabs sentry config from SENTRY_DSN environment variable
+    sentry = Sentry(app)
 
     @app.route('/', methods = ['GET'])
     def toplevel():
