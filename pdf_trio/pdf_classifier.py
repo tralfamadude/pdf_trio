@@ -57,7 +57,7 @@ class PdfClassifier:
         if not image_server_hostport:
             raise ValueError('Missing TF image classifier host:port spec, ' +
                 'define env var TF_IMAGE_SERVER_HOSTPORT=host:port')
-        self.image_tf_server_url = "http://{}:{}/v1/models/tensorflow_model:predict".format(
+        self.image_tf_server_url = "http://{}:{}/v1/models/image_model:predict".format(
             image_server_hostport.split(":")[0],
             image_server_hostport.split(":")[1],
         )
