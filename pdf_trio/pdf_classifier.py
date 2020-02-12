@@ -53,23 +53,17 @@ class PdfClassifier:
         }
         self.json_content_header = {"Content-Type": "application/json"}
 
-        image_server_hostport = os.environ.get('TF_IMAGE_SERVER_HOSTPORT')
-        if not image_server_hostport:
-            raise ValueError('Missing TF image classifier host:port spec, ' +
-                'define env var TF_IMAGE_SERVER_HOSTPORT=host:port')
-        self.image_tf_server_url = "http://{}:{}/v1/models/image_model:predict".format(
-            image_server_hostport.split(":")[0],
-            image_server_hostport.split(":")[1],
-        )
+        image_server_prefix = os.environ.get('TF_IMAGE_SERVER_URL')
+        if not image_server_prefix:
+            raise ValueError('Missing TF image classifier URL config, ' +
+                'define env var TF_IMAGE_SERVER_URL')
+        self.image_tf_server_url = image_server_prefix + "/models/image_model:predict"
 
-        bert_server_hostport = os.environ.get('TF_BERT_SERVER_HOSTPORT')
-        if not bert_server_hostport:
-            raise ValueError('Missing TF BERT classifier host:port spec, ' +
-                'define env var TF_BERT_SERVER_HOSTPORT=host:port')
-        self.bert_tf_server_url = "http://{}:{}/v1/models/bert_model:predict".format(
-            bert_server_hostport.split(":")[0],
-            bert_server_hostport.split(":")[1],
-        )
+        bert_server_prefix = os.environ.get('TF_BERT_SERVER_URL')
+        if not bert_server_prefix :
+            raise ValueError('Missing TF BERT classifier URL config, ' +
+                'define env var TF_BERT_SERVER_URL')
+        self.bert_tf_server_url = bert_server_prefix + "/models/bert_model:predict"
 
         vocab_path = os.environ.get('TF_BERT_VOCAB_PATH')
         if not vocab_path:
