@@ -13,34 +13,6 @@ import requests
 from fixtures import flask_client, skip_if_no_tensorflow
 
 
-def test_classify_url(flask_client):
-    """
-    Test Classify By URL
-    """
-    skip_if_no_tensorflow()
-    headers = {"content-type": "application/json"}
-    url_map = {"urls": [
-        "https://arxiv.org/pdf/1607.01759.pdf",
-        "https://example.com/maps/foo.pdf",
-    ]}
-    url_json = json.dumps(url_map)
-    json_response = flask_client.post(
-        "/classify/research-pub/url",
-        data=url_json,
-        headers=headers,
-    )
-    assert json_response.status_code == 200
-
-    # expecting json like:   { "url1": 0.88, "url2": 0.23 }
-    print("verbatim response=%s" % (json_response.data))
-    predictions = json_response.get_json()["predictions"]
-    for k in predictions:
-        print("%.2f : %s" % (predictions[k], k))
-    assert type(predictions[url_map['urls'][0]]) == float
-    assert predictions[url_map['urls'][0]] != 0.5
-    assert predictions[url_map['urls'][1]] != 0.5
-
-
 def do_classify_on_pdf(pdf_file_path, flask_client):
     """
     Helper to read in sample pdf one at a time and classify them
