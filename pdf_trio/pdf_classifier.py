@@ -315,7 +315,7 @@ class PdfClassifier:
             outs, errs = pp.communicate(timeout=30)
             # dump stderr if DEBUG
             if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
-                log.debug("infer_image_new.py stderr: ", errs)
+                log.debug("infer_image_new.py stderr: %s", errs)
             # parse outs     ex: research 0.5082055 ./tmp/0b4997a068e557eb92b6adf7875248ec7292dd4a.jpg
             lines = outs.split('\n')
             for aline in lines:
