@@ -84,6 +84,3 @@ def test_all(flask_client):
         do_classify_on_pdf(fname, flask_client)
     for fname in positive_samples:
         do_classify_on_pdf(fname, flask_client)
-
-if __name__ == "__main__":
-    test_all()
