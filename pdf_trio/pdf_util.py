@@ -92,7 +92,7 @@ def extract_pdf_text_prev(pdf_tmp_file):
     txt_name = pdf_tmp_file + ".txt"
     # start subprocess
     p_args = ['pdftotext', '-nopgbrk', '-eol', 'unix', '-enc', 'UTF-8', pdf_tmp_file, txt_name]
-    pp = Popen(p_args)
+    pp = subprocess.Popen(p_args)
     t0 = time.time()
     while time.time() - t0 < 5:  # 5 sec max, typical is less than 300msec
         ret = pp.poll()
@@ -156,7 +156,7 @@ def extract_pdf_image_prev(pdf_tmp_file, page=0):
                    '224x224', jpg_name]
     if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
         log.debug("ImageMagick Command=" + " ".join(convert_cmd))
-    pp = Popen(convert_cmd)
+    pp = subprocess.Popen(convert_cmd)
     t0 = time.time()
     while time.time() - t0 < 5:  # 5 sec max, typical is less than 300msec
         ret = pp.poll()
