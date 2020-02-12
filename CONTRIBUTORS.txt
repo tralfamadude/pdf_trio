@@ -1,0 +1,6 @@
+
+Paul Baclace
+- original author
+
+Bryan Newbold <bnewbold@archive.org>
+- changes for use in production at Internet Archive
